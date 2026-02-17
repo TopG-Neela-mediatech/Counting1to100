@@ -85,7 +85,7 @@ namespace Counting1To100
             }
         }
 
-        public void Initialize(Vector3 endPosition, float speed, float bobFrequency, float bobAmplitude)
+        public void Initialize(Vector3 endPosition, float speed, float bobFrequency, float minBobAmplitude, float maxBobAmplitude)
         {
             // Reset State for Pooling
             _isDropped = false;
@@ -93,7 +93,7 @@ namespace Counting1To100
             if (_rb != null)
             {
                 _rb.bodyType = RigidbodyType2D.Kinematic;
-                _rb.linearVelocity = Vector2.zero;
+                _rb.linearVelocity = Vector2.zero; // Unity 6 / 2023+ uses linearVelocity, else velocity
                 _rb.angularVelocity = 0f;
                 // Reset rotation to neutral
                 transform.rotation = Quaternion.identity; 
@@ -109,16 +109,17 @@ namespace Counting1To100
             float validSpeed = speed > 0 ? speed : 1f; 
             float duration = distance / validSpeed;
 
-            _moveCoroutine = StartCoroutine(MoveRoutine(endPosition, duration, bobFrequency, bobAmplitude));
+            _moveCoroutine = StartCoroutine(MoveRoutine(endPosition, duration, bobFrequency, minBobAmplitude, maxBobAmplitude));
         }
 
-        private System.Collections.IEnumerator MoveRoutine(Vector3 endPosition, float duration, float bobFrequency, float bobAmplitude)
+        private System.Collections.IEnumerator MoveRoutine(Vector3 endPosition, float duration, float bobFrequency, float minBobAmplitude, float maxBobAmplitude)
         {
             float elapsed = 0f;
             Vector3 startPosition = _rectTransform != null ? _rectTransform.anchoredPosition3D : transform.position;
             
             // Use a random phase offset so all bees don't bob in perfect sync
             float bobPhase = Random.Range(0f, 2f * Mathf.PI);
+            float noiseSeed = Random.Range(0f, 100f);
 
             while (elapsed < duration)
             {
@@ -130,8 +131,13 @@ namespace Counting1To100
                 // Linear Lerp for consistent horizontal speed
                 Vector3 currentBasePos = Vector3.Lerp(startPosition, endPosition, t);
                 
+                // Calculate Dynamic Amplitude using Perlin Noise
+                // Frequency of 1.0f means smooth variation over ~1 second scale
+                float noise = Mathf.PerlinNoise(Time.time * 1.0f + noiseSeed, 0f); 
+                float currentAmplitude = Mathf.Lerp(minBobAmplitude, maxBobAmplitude, noise);
+
                 // Add Bobbing
-                float yOffset = Mathf.Sin((Time.time * bobFrequency) + bobPhase) * bobAmplitude;
+                float yOffset = Mathf.Sin((Time.time * bobFrequency) + bobPhase) * currentAmplitude;
                 Vector3 bobbedPos = currentBasePos + new Vector3(0, yOffset, 0);
 
                 if (_rectTransform != null)
@@ -172,17 +178,57 @@ namespace Counting1To100
         {
             if (!_isDropped)
             {
-                Drop();
+                IDropTarget closestTarget = GetClosestTarget();
+                if (closestTarget != null)
+                {
+                    DropTo(closestTarget);
+                }
+                else
+                {
+                    Debug.LogWarning("No Drop Targets found!");
+                }
             }
         }
 
-        public void Drop()
+        private IDropTarget GetClosestTarget()
+        {
+            if (JarManager.Instance != null)
+            {
+                return JarManager.Instance.GetClosestDropTarget(transform.position);
+            }
+            return null;
+        }
+
+        public void DropTo(IDropTarget target)
         {
             _isDropped = true;
             if (_moveCoroutine != null) StopCoroutine(_moveCoroutine);
             
-            _rb.bodyType = RigidbodyType2D.Dynamic; // Enable gravity
-            _rb.gravityScale = 1f; // Standard gravity for World/Camera space
+            // Start Tween to Target
+            _moveCoroutine = StartCoroutine(DropRoutine(target));
+        }
+
+        private System.Collections.IEnumerator DropRoutine(IDropTarget target)
+        {
+            // Simple Drop Speed - can be parameterized or calculated based on distance
+            float dropSpeed = 500f; // Pixels per second if Canvas, or Units if World
+            Vector3 targetPosition = target.DropTarget.position;
+
+            while (Vector3.Distance(transform.position, targetPosition) > 1f)
+            {
+                // Move towards target
+                transform.position = Vector3.MoveTowards(transform.position, targetPosition, dropSpeed * Time.deltaTime);
+                
+                // Optional: Rotate to face down/target?
+                
+                yield return null;
+            }
+
+            // Snap to target
+            transform.position = targetPosition;
+            
+            // Manual Callback to Interaction
+            target.ReceiveDrop(this);
         }
 
         // --- Visual Animation Helpers ---

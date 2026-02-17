@@ -10,11 +10,10 @@ namespace Counting1To100
         [SerializeField] private Transform _endPoint; // Where the bee flies to
         [SerializeField] private float _spawnInterval = 2f; 
         [SerializeField] private float _moveSpeed = 100f; // Single fixed speed
-        [Header("Bobbing Settings")]
         [SerializeField] private float _minBobFrequency = 1.5f;
         [SerializeField] private float _maxBobFrequency = 2.5f;
-        [SerializeField] private float _minBobAmplitude = 40f;
-        [SerializeField] private float _maxBobAmplitude = 60f;
+        [SerializeField] private float _minBobAmplitude = 0.25f;
+        [SerializeField] private float _maxBobAmplitude = 0.5f;
         
         [SerializeField] private int _minNumber = 1;
         [SerializeField] private int _maxNumber = 10;
@@ -103,19 +102,26 @@ namespace Counting1To100
             beeObj.transform.rotation = Quaternion.identity;
             beeObj.transform.localScale = Vector3.one;
 
-            // 3. Setup Number
-            int randomNumber = Random.Range(_minNumber, _maxNumber + 1);
+            // 3. Setup Number (Dynamic from GameManager)
+            int min = 1;
+            int max = 10;
+            if (GameManager.Instance != null)
+            {
+                min = GameManager.Instance.CurrentLevelMin;
+                max = GameManager.Instance.CurrentLevelMax;
+            }
+            
+            int randomNumber = Random.Range(min, max + 1);
             beeObj.SetNumber(randomNumber);
             
             // 4. Calculate End Position
             Vector3 endPos = _endPoint.position;
 
-            // 5. Random Bobbing
+            // 5. Random Bobbing (Frequency is fixed per bee, Amplitude varies over time)
             float randomFreq = Random.Range(_minBobFrequency, _maxBobFrequency);
-            float randomAmp = Random.Range(_minBobAmplitude, _maxBobAmplitude);
-
-            // 6. Start Movement (Single Speed, Random Bobbing)
-            beeObj.Initialize(endPos, _moveSpeed, randomFreq, randomAmp);
+            
+            // 6. Start Movement (Single Speed, Variable Amplitude Range)
+            beeObj.Initialize(endPos, _moveSpeed, randomFreq, _minBobAmplitude, _maxBobAmplitude);
         }
 
         private void ReturnBeeToPool(BeeController bee)
