@@ -1,75 +1,214 @@
 using UnityEngine;
+using TMPro;
 
 namespace Counting1To100
 {
     /// <summary>
     /// Controls the visual and movement behavior of the Bee.
-    /// Handles wing rotation and horizontal flight.
+    /// Handles wing rotation, antenna twitch, and horizontal flight with bobbing.
     /// </summary>
     public class BeeController : MonoBehaviour
     {
-        [Header("Wing Settings")]
-        [Tooltip("Assign the 4 wing transforms here.")]
-        [SerializeField] private Transform[] _wings;
+        [Header("UI")]
+        [SerializeField] private TextMeshProUGUI _numberText;
 
-        [Tooltip("Speed of the wing flutter animation.")]
-        [SerializeField] private float _flutterSpeed = 20f;
+        [Header("Upper Wings")]
+        [SerializeField] private Transform _upperLeftWing;
+        [SerializeField] private Transform _upperRightWing;
+        [Tooltip("Maximum rotation angle for upper wings.")]
+        [SerializeField] private float _upperWingAngle = 45f;
+        [Tooltip("Flutter speed for upper wings.")]
+        [SerializeField] private float _upperFlutterSpeed = 20f;
 
-        [Tooltip("Maximum angle of wing rotation.")]
-        [SerializeField] private float _flutterAngle = 15f;
+        [Header("Lower Wings")]
+        [SerializeField] private Transform _lowerLeftWing;
+        [SerializeField] private Transform _lowerRightWing;
+        [Tooltip("Maximum rotation angle for lower wings.")]
+        [SerializeField] private float _lowerWingAngle = 30f;
+        [Tooltip("Flutter speed for lower wings.")]
+        [SerializeField] private float _lowerFlutterSpeed = 15f;
 
-        [Header("Movement Settings")]
-        [SerializeField] private float _moveSpeed = 2f;
+        [Header("Antennas")]
+        [SerializeField] private Transform _leftAntenna;
+        [SerializeField] private Transform _rightAntenna;
+        [Tooltip("Speed of the antenna twitch.")]
+        [SerializeField] private float _antennaTwitchSpeed = 10f;
+        [Tooltip("Twitch strength on X axis.")]
+        [SerializeField] private float _antennaTwitchX = 0f;
+        [Tooltip("Twitch strength on Y axis.")]
+        [SerializeField] private float _antennaTwitchY = 0f;
+        [Tooltip("Twitch strength on Z axis.")]
+        [SerializeField] private float _antennaTwitchZ = 5f;
 
-        private Quaternion[] _initialRotations;
+        [Header("Movement")]
+        // Controlled by Spawner now
+        private float _bobFrequency;
+        private float _bobAmplitude;
 
-        private void Start()
+        [Header("Game Logic")]
+        public int Number { get; private set; }
+        private bool _isDropped = false;
+        private Rigidbody2D _rb;
+        private RectTransform _rectTransform;
+        private Coroutine _moveCoroutine;
+        
+        // Event for Pooled Despawning
+        public event System.Action<BeeController> OnDespawn;
+
+        private void Awake()
         {
-            if (_wings != null && _wings.Length > 0)
+            _rectTransform = GetComponent<RectTransform>();
+            _rb = GetComponent<Rigidbody2D>();
+            if (_rb == null) _rb = gameObject.AddComponent<Rigidbody2D>();
+            _rb.bodyType = RigidbodyType2D.Kinematic; // Fly initially
+
+            if (_upperLeftWing) _startRotUL = _upperLeftWing.localRotation;
+            if (_upperRightWing) _startRotUR = _upperRightWing.localRotation;
+            if (_lowerLeftWing) _startRotLL = _lowerLeftWing.localRotation;
+            if (_lowerRightWing) _startRotLR = _lowerRightWing.localRotation;
+            if (_leftAntenna) _startRotLA = _leftAntenna.localRotation;
+            if (_rightAntenna) _startRotRA = _rightAntenna.localRotation;
+        }
+
+        private void OnEnable()
+        {
+            StartCoroutine(AnimationRoutine());
+        }
+
+        private System.Collections.IEnumerator AnimationRoutine()
+        {
+            while (true)
             {
-                _initialRotations = new Quaternion[_wings.Length];
-                for (int i = 0; i < _wings.Length; i++)
-                {
-                    if (_wings[i] != null)
-                    {
-                        _initialRotations[i] = _wings[i].localRotation;
-                    }
-                }
+                HandleWingFlutter();
+                HandleAntennaTwitch();
+                yield return null;
             }
         }
 
-        private void Update()
+        public void Initialize(Vector3 endPosition, float speed, float bobFrequency, float bobAmplitude)
         {
-            HandleWingFlutter();
+            // Reset State for Pooling
+            _isDropped = false;
+            
+            if (_rb != null)
+            {
+                _rb.bodyType = RigidbodyType2D.Kinematic;
+                _rb.linearVelocity = Vector2.zero;
+                _rb.angularVelocity = 0f;
+                // Reset rotation to neutral
+                transform.rotation = Quaternion.identity; 
+            }
+
+            if (_moveCoroutine != null) StopCoroutine(_moveCoroutine);
+            
+            // Calculate duration based on passed Speed and Distance
+            Vector3 startPos = _rectTransform != null ? _rectTransform.anchoredPosition3D : transform.position;
+            float distance = Vector3.Distance(startPos, endPosition);
+            
+            // Avoid divide by zero, ensure min speed
+            float validSpeed = speed > 0 ? speed : 1f; 
+            float duration = distance / validSpeed;
+
+            _moveCoroutine = StartCoroutine(MoveRoutine(endPosition, duration, bobFrequency, bobAmplitude));
         }
 
-        /// <summary>
-        /// Rotates the wings back and forth to simulate fluttering.
-        /// </summary>
+        private System.Collections.IEnumerator MoveRoutine(Vector3 endPosition, float duration, float bobFrequency, float bobAmplitude)
+        {
+            float elapsed = 0f;
+            Vector3 startPosition = _rectTransform != null ? _rectTransform.anchoredPosition3D : transform.position;
+            
+            // Use a random phase offset so all bees don't bob in perfect sync
+            float bobPhase = Random.Range(0f, 2f * Mathf.PI);
+
+            while (elapsed < duration)
+            {
+                if (_isDropped) yield break;
+
+                elapsed += Time.deltaTime;
+                float t = elapsed / duration;
+                
+                // Linear Lerp for consistent horizontal speed
+                Vector3 currentBasePos = Vector3.Lerp(startPosition, endPosition, t);
+                
+                // Add Bobbing
+                float yOffset = Mathf.Sin((Time.time * bobFrequency) + bobPhase) * bobAmplitude;
+                Vector3 bobbedPos = currentBasePos + new Vector3(0, yOffset, 0);
+
+                if (_rectTransform != null)
+                {
+                    transform.position = bobbedPos; 
+                }
+                else
+                {
+                    transform.position = bobbedPos;
+                }
+
+                yield return null;
+            }
+
+            // Reached End
+            if (!_isDropped)
+            {
+                Despawn(); // Return to pool
+            }
+        }
+
+        public void Despawn()
+        {
+            if (_moveCoroutine != null) StopCoroutine(_moveCoroutine);
+            OnDespawn?.Invoke(this);
+        }
+
+        public void SetNumber(int number)
+        {
+            Number = number;
+            if (_numberText != null)
+            {
+                _numberText.text = number.ToString();
+            }
+        }
+
+        private void OnMouseDown()
+        {
+            if (!_isDropped)
+            {
+                Drop();
+            }
+        }
+
+        public void Drop()
+        {
+            _isDropped = true;
+            if (_moveCoroutine != null) StopCoroutine(_moveCoroutine);
+            
+            _rb.bodyType = RigidbodyType2D.Dynamic; // Enable gravity
+            _rb.gravityScale = 1f; // Standard gravity for World/Camera space
+        }
+
+        // --- Visual Animation Helpers ---
+
+        private Quaternion _startRotUL, _startRotUR, _startRotLL, _startRotLR, _startRotLA, _startRotRA;
+
+        private void HandleAntennaTwitch()
+        {
+            float sin = Mathf.Sin(Time.time * _antennaTwitchSpeed);
+            float x = sin * _antennaTwitchX;
+            float y = sin * _antennaTwitchY;
+            float z = sin * _antennaTwitchZ;
+
+            if (_leftAntenna) _leftAntenna.localRotation = _startRotLA * Quaternion.Euler(x, y, z);
+            if (_rightAntenna) _rightAntenna.localRotation = _startRotRA * Quaternion.Euler(x, -y, -z);
+        }
+
         private void HandleWingFlutter()
         {
-            if (_wings == null) return;
+            float upperAngle = Mathf.Sin(Time.time * _upperFlutterSpeed) * _upperWingAngle;
+            float lowerAngle = Mathf.Sin(Time.time * _lowerFlutterSpeed) * _lowerWingAngle;
 
-            float angle = Mathf.Sin(Time.time * _flutterSpeed) * _flutterAngle;
-
-            for (int i = 0; i < _wings.Length; i++)
-            {
-                if (_wings[i] != null)
-                {
-                    // Rotate around the Z axis (assuming 2D sprite setup)
-                    // Adjust axis as needed based on prefab orientation
-                    Quaternion flutterRotation = Quaternion.Euler(0, 0, angle);
-                    _wings[i].localRotation = _initialRotations[i] * flutterRotation;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Moves the bee horizontally.
-        /// </summary>
-        public void Move()
-        {
-            transform.Translate(Vector3.right * _moveSpeed * Time.deltaTime);
+            if (_upperLeftWing) _upperLeftWing.localRotation = _startRotUL * Quaternion.Euler(0, 0, upperAngle);
+            if (_upperRightWing) _upperRightWing.localRotation = _startRotUR * Quaternion.Euler(0, 0, -upperAngle);
+            if (_lowerLeftWing) _lowerLeftWing.localRotation = _startRotLL * Quaternion.Euler(0, 0, lowerAngle);
+            if (_lowerRightWing) _lowerRightWing.localRotation = _startRotLR * Quaternion.Euler(0, 0, -lowerAngle);
         }
     }
 }
