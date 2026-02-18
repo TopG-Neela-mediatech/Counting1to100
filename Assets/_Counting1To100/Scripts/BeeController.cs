@@ -210,25 +210,52 @@ namespace Counting1To100
 
         private System.Collections.IEnumerator DropRoutine(IDropTarget target)
         {
-            // Simple Drop Speed - can be parameterized or calculated based on distance
-            float dropSpeed = 500f; // Pixels per second if Canvas, or Units if World
-            Vector3 targetPosition = target.DropTarget.position;
+            Vector3 startPos = transform.position;
+            Vector3 endPos = target.DropTarget.position;
+            // Get speed from Manager or default
+            float speed = JarManager.Instance != null ? JarManager.Instance.DropSpeed : 500f;
+            
+            float distance = Vector3.Distance(startPos, endPos);
+            float duration = distance / speed; 
+            float elapsed = 0f;
 
-            while (Vector3.Distance(transform.position, targetPosition) > 1f)
+            Vector3 startScale = transform.localScale;
+
+            while (elapsed < duration)
             {
-                // Move towards target
-                transform.position = Vector3.MoveTowards(transform.position, targetPosition, dropSpeed * Time.deltaTime);
+                elapsed += Time.deltaTime;
+                float t = elapsed / duration;
                 
-                // Optional: Rotate to face down/target?
-                
+                // 1. Move Linear
+                transform.position = Vector3.Lerp(startPos, endPos, t);
+
+                // 2. Scale Down (Shrink into Jar) - Trigger in last 30%
+                if (t > 0.7f) 
+                {
+                     float scaleT = (t - 0.7f) / 0.3f; // Normalize 0 to 1 over the last 30%
+                     transform.localScale = Vector3.Lerp(startScale, Vector3.one * 0.35f, scaleT);
+                }
+
                 yield return null;
             }
 
-            // Snap to target
-            transform.position = targetPosition;
+            // Ensure Scale is Target and Position is Target
+            transform.position = endPos;
+            transform.localScale = Vector3.one * 0.35f;
             
             // Manual Callback to Interaction
             target.ReceiveDrop(this);
+        }
+
+        public void BecomeDecoration()
+        {
+            // Stop logic
+            StopAllCoroutines();
+            if (_rb) _rb.simulated = false;
+            if (GetComponent<Collider2D>()) GetComponent<Collider2D>().enabled = false;
+            
+            // Disable this script so Update/FixedUpdate stops, but Sprite wrapper stays active
+            this.enabled = false; 
         }
 
         // --- Visual Animation Helpers ---

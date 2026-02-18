@@ -345,9 +345,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 302402817}
-  - component: {fileID: 302402818}
   m_Layer: 0
-  m_Name: BeeSpawners
+  m_Name: BeeSpawner_Root
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -374,29 +373,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &302402818
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 302402816}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f48bb1110c6cfa14b9d750c7f5baaf51, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _beePrefab: {fileID: -4754911852359561411, guid: 371b25bdbec133d49aae17ada19e2727, type: 3}
-  _spawnPoint: {fileID: 12590921}
-  _endPoint: {fileID: 1348619833}
-  _spawnInterval: 1.8
-  _moveSpeed: 1.5
-  _minBobFrequency: 1.5
-  _maxBobFrequency: 1
-  _minBobAmplitude: 0.25
-  _maxBobAmplitude: 0.5
-  _minNumber: 1
-  _maxNumber: 10
 --- !u!1 &323092319
 GameObject:
   m_ObjectHideFlags: 0
@@ -464,6 +440,38 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &439955907
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 439955908}
+  m_Layer: 0
+  m_Name: Controllers
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &439955908
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 439955907}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1289642204}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &462521490
 GameObject:
   m_ObjectHideFlags: 0
@@ -495,6 +503,7 @@ Transform:
   m_Children:
   - {fileID: 1520995544}
   - {fileID: 1320894562}
+  - {fileID: 1992860454}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &527644464
@@ -1653,6 +1662,61 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 7686354083192312548, guid: 67105d10242cff840bed675b6ff96afd, type: 3}
   m_PrefabInstance: {fileID: 1199055423}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1289642203
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1289642204}
+  - component: {fileID: 1289642205}
+  m_Layer: 0
+  m_Name: BeeSpawner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1289642204
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1289642203}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 439955908}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1289642205
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1289642203}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f48bb1110c6cfa14b9d750c7f5baaf51, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _beePrefab: {fileID: -4754911852359561411, guid: 371b25bdbec133d49aae17ada19e2727, type: 3}
+  _spawnPoint: {fileID: 12590921}
+  _endPoint: {fileID: 1348619833}
+  _spawnInterval: 1.8
+  _moveSpeed: 1.5
+  _minBobFrequency: 1.5
+  _maxBobFrequency: 1
+  _minBobAmplitude: 0.25
+  _maxBobAmplitude: 0.5
+  _minNumber: 1
+  _maxNumber: 10
 --- !u!1 &1320894561
 GameObject:
   m_ObjectHideFlags: 0
@@ -2971,6 +3035,51 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 7686354083192312548, guid: 67105d10242cff840bed675b6ff96afd, type: 3}
   m_PrefabInstance: {fileID: 1982890342}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1992860453
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1992860454}
+  - component: {fileID: 1992860455}
+  m_Layer: 0
+  m_Name: JarsManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1992860454
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1992860453}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 462521491}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1992860455
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1992860453}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82ec0bffe8c42304e871010cd9a446dc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DropSpeed: 5
 --- !u!1001 &2956570577778258882
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3039,12 +3148,13 @@ SceneRoots:
   - {fileID: 699576198}
   - {fileID: 669230854}
   - {fileID: 462521491}
+  - {fileID: 411795138}
+  - {fileID: 439955908}
   - {fileID: 1692246058}
   - {fileID: 527644468}
   - {fileID: 829381616}
   - {fileID: 806439904}
   - {fileID: 1057368880}
-  - {fileID: 411795138}
   - {fileID: 94528939}
   - {fileID: 1649820714}
   - {fileID: 1135288020}

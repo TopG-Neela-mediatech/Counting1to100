@@ -54,6 +54,14 @@ namespace Counting1To100
                     // Pass true for valid match
                     GameManager.Instance.CheckDrop(bee.Number, true);
                 }
+
+                // Visual Retention
+                bee.transform.SetParent(DropTarget);
+                bee.BecomeDecoration();
+                
+                // Randomize position inside jar slightly to avoid stacking
+                Vector3 randomOffset = new Vector3(Random.Range(-0.2f, 0.2f), Random.Range(-0.2f, 0.2f), 0);
+                bee.transform.localPosition = Vector3.zero + randomOffset;
             }
             else
             {
@@ -62,9 +70,17 @@ namespace Counting1To100
                 {
                     GameManager.Instance.CheckDrop(bee.Number, false);
                 }
+                bee.Despawn(); // Return to pool only on fail
             }
-
-            bee.Despawn(); // Return to pool
+        }
+        
+        public void ClearContent()
+        {
+            // Destroy all child objects (Previous bees)
+            foreach (Transform child in DropTarget)
+            {
+                Destroy(child.gameObject);
+            }
         }
 
         // Deprecated: Collider not strictly needed with Tween/Callback logic, 

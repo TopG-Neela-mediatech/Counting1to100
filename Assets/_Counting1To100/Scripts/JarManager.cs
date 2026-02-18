@@ -5,6 +5,9 @@ namespace Counting1To100
 {
     public class JarManager : GenericSingleton<JarManager>
     {
+        [Header("Settings")]
+        public float DropSpeed = 500f;
+
         private List<JarController> _jars = new List<JarController>();
 
         protected override void Awake()
@@ -74,6 +77,7 @@ namespace Counting1To100
 
             for (int i = 0; i < _jars.Count; i++)
             {
+                _jars[i].ClearContent(); // Clear previous level's fireflies
                 _jars[i].SetTargetNumber(startNum + i);
             }
         }
