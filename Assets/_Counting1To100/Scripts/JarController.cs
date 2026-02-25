@@ -70,7 +70,9 @@ namespace Counting1To100
                 {
                     GameManager.Instance.CheckDrop(bee.Number, false);
                 }
-                bee.Despawn(); // Return to pool only on fail
+                
+                // Trigger the rejection animation (moves out/down with higher sorting order)
+                bee.RejectFromJar();
             }
         }
         

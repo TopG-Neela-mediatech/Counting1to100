@@ -1,5 +1,6 @@
 using UnityEngine;
 using TMPro;
+using UnityEngine.EventSystems;
 
 namespace Counting1To100
 {
@@ -7,7 +8,14 @@ namespace Counting1To100
     /// Controls the visual and movement behavior of the Bee.
     /// Handles wing rotation, antenna twitch, and horizontal flight with bobbing.
     /// </summary>
-    public class BeeController : MonoBehaviour
+    [System.Serializable]
+    public struct BeeSpriteData
+    {
+        public SpriteRenderer Renderer;
+        public int OriginalOrder;
+    }
+
+    public class BeeController : MonoBehaviour, IPointerClickHandler, IPointerDownHandler, IPointerUpHandler
     {
         [Header("UI")]
         [SerializeField] private TextMeshProUGUI _numberText;
@@ -45,6 +53,11 @@ namespace Counting1To100
         private float _bobFrequency;
         private float _bobAmplitude;
 
+        [Header("Visuals & Rejection")]
+        [SerializeField] private System.Collections.Generic.List<BeeSpriteData> _beeSprites;
+        [SerializeField] private float _rejectYOffset = -2f;
+        [SerializeField] private int _rejectSortingOrderBase = 12;
+
         [Header("Game Logic")]
         public int Number { get; private set; }
         private bool _isDropped = false;
@@ -68,6 +81,17 @@ namespace Counting1To100
             if (_lowerRightWing) _startRotLR = _lowerRightWing.localRotation;
             if (_leftAntenna) _startRotLA = _leftAntenna.localRotation;
             if (_rightAntenna) _startRotRA = _rightAntenna.localRotation;
+
+            // Initialize/Cache original sorting orders into the struct list if they weren't set in Inspector
+            for (int i = 0; i < _beeSprites.Count; i++)
+            {
+                var data = _beeSprites[i];
+                if (data.Renderer != null)
+                {
+                    data.OriginalOrder = data.Renderer.sortingOrder;
+                    _beeSprites[i] = data; // Assign back to list (struct)
+                }
+            }
         }
 
         private void OnEnable()
@@ -89,6 +113,8 @@ namespace Counting1To100
         {
             // Reset State for Pooling
             _isDropped = false;
+            ResetSortingOrders();
+            transform.localScale = Vector3.one; 
             
             if (_rb != null)
             {
@@ -162,7 +188,19 @@ namespace Counting1To100
         public void Despawn()
         {
             if (_moveCoroutine != null) StopCoroutine(_moveCoroutine);
+            ResetSortingOrders();
             OnDespawn?.Invoke(this);
+        }
+
+        private void ResetSortingOrders()
+        {
+            foreach (var data in _beeSprites)
+            {
+                if (data.Renderer != null)
+                {
+                    data.Renderer.sortingOrder = data.OriginalOrder;
+                }
+            }
         }
 
         public void SetNumber(int number)
@@ -174,7 +212,16 @@ namespace Counting1To100
             }
         }
 
-        private void OnMouseDown()
+        public void OnPointerDown(PointerEventData eventData)
+        {
+            // Required for OnPointerClick to work in some input modules
+        }
+
+        public void OnPointerUp(PointerEventData eventData)
+        {
+        }
+
+        public void OnPointerClick(PointerEventData eventData)
         {
             if (!_isDropped)
             {
@@ -206,6 +253,47 @@ namespace Counting1To100
             
             // Start Tween to Target
             _moveCoroutine = StartCoroutine(DropRoutine(target));
+        }
+
+        public void RejectFromJar()
+        {
+            if (_moveCoroutine != null) StopCoroutine(_moveCoroutine);
+            _moveCoroutine = StartCoroutine(RejectRoutine());
+        }
+
+        private System.Collections.IEnumerator RejectRoutine()
+        {
+            // 1. Change sorting orders to be above the jar (11)
+            // Determine minimum current order to maintain relative offsets
+            int minOrder = int.MaxValue;
+            foreach (var data in _beeSprites)
+            {
+                if (data.Renderer != null && data.Renderer.sortingOrder < minOrder)
+                    minOrder = data.Renderer.sortingOrder;
+            }
+
+            int offset = _rejectSortingOrderBase - minOrder;
+            foreach (var data in _beeSprites)
+            {
+                if (data.Renderer != null) data.Renderer.sortingOrder += offset;
+            }
+
+            // 2. Move away (down) from current position (the jar)
+            Vector3 startPos = transform.position;
+            Vector3 endPos = startPos + new Vector3(0, _rejectYOffset, 0);
+            
+            float duration = 0.5f; // Fast rejection
+            float elapsed = 0f;
+
+            while (elapsed < duration)
+            {
+                elapsed += Time.deltaTime;
+                float t = elapsed / duration;
+                transform.position = Vector3.Lerp(startPos, endPos, t);
+                yield return null;
+            }
+
+            Despawn();
         }
 
         private System.Collections.IEnumerator DropRoutine(IDropTarget target)
@@ -250,12 +338,11 @@ namespace Counting1To100
         public void BecomeDecoration()
         {
             // Stop logic
-            StopAllCoroutines();
+            if (_moveCoroutine != null) StopCoroutine(_moveCoroutine);
             if (_rb) _rb.simulated = false;
             if (GetComponent<Collider2D>()) GetComponent<Collider2D>().enabled = false;
             
-            // Disable this script so Update/FixedUpdate stops, but Sprite wrapper stays active
-            this.enabled = false; 
+            // Keep script active for animations
         }
 
         // --- Visual Animation Helpers ---

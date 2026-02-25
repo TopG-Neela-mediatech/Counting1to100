@@ -71,7 +71,7 @@ namespace Counting1To100
             if (GameManager.Instance == null) return;
 
             int startNum = GameManager.Instance.CurrentLevelMin;
-            
+
             // Re-sort to ensure Left->Right is Min->Max
             _jars.Sort((a, b) => a.transform.position.x.CompareTo(b.transform.position.x));
 
