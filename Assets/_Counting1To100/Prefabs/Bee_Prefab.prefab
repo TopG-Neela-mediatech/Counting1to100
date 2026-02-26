@@ -172,8 +172,11 @@ MonoBehaviour:
     OriginalOrder: 0
   - Renderer: {fileID: 6286234327879394173}
     OriginalOrder: 0
+  - Renderer: {fileID: 5299227564596945565}
+    OriginalOrder: 0
   _rejectYOffset: -2
   _rejectSortingOrderBase: 12
+  _textCanvas: {fileID: 6904234340698500715}
 --- !u!61 &6776521926178417104
 BoxCollider2D:
   m_ObjectHideFlags: 0

@@ -57,6 +57,8 @@ namespace Counting1To100
         [SerializeField] private System.Collections.Generic.List<BeeSpriteData> _beeSprites;
         [SerializeField] private float _rejectYOffset = -2f;
         [SerializeField] private int _rejectSortingOrderBase = 12;
+        [SerializeField] private Canvas _textCanvas;
+        private int _originalTextSortingOrder;
 
         [Header("Game Logic")]
         public int Number { get; private set; }
@@ -91,6 +93,12 @@ namespace Counting1To100
                     data.OriginalOrder = data.Renderer.sortingOrder;
                     _beeSprites[i] = data; // Assign back to list (struct)
                 }
+            }
+
+            // Cache original canvas sorting order
+            if (_textCanvas != null)
+            {
+                _originalTextSortingOrder = _textCanvas.sortingOrder;
             }
         }
 
@@ -201,6 +209,11 @@ namespace Counting1To100
                     data.Renderer.sortingOrder = data.OriginalOrder;
                 }
             }
+
+            if (_textCanvas != null)
+            {
+                _textCanvas.sortingOrder = _originalTextSortingOrder;
+            }
         }
 
         public void SetNumber(int number)
@@ -209,6 +222,21 @@ namespace Counting1To100
             if (_numberText != null)
             {
                 _numberText.text = number.ToString();
+            }
+        }
+
+        public Color _color;
+
+        [ContextMenu("Set Custom Color")]
+
+        public void SetColor()
+        {
+            foreach (var data in _beeSprites)
+            {
+                if (data.Renderer != null)
+                {
+                    data.Renderer.color = _color;
+                }
             }
         }
 
@@ -228,7 +256,23 @@ namespace Counting1To100
                 IDropTarget closestTarget = GetClosestTarget();
                 if (closestTarget != null)
                 {
-                    DropTo(closestTarget);
+                    int childCount = closestTarget.DropTarget.childCount;
+
+                    // INSTANT VALIDATION: Check if this bee matches the target jar immediately on tap
+                    if (childCount == 0 && this.Number == closestTarget.Number)
+                    {
+                        // Start the fly-in animation
+                        DropTo(closestTarget);
+                    }
+                    else
+                    {
+                        // Incorrect tap: Trigger rejection feedback instantly
+                        if (GameManager.Instance != null)
+                        {
+                            GameManager.Instance.CheckDrop(this.Number, false);
+                        }
+                        RejectFromJar(closestTarget.DropTarget.position);
+                    }
                 }
                 else
                 {
@@ -255,41 +299,48 @@ namespace Counting1To100
             _moveCoroutine = StartCoroutine(DropRoutine(target));
         }
 
-        public void RejectFromJar()
+        public void RejectFromJar(Vector3 targetPos)
         {
             if (_moveCoroutine != null) StopCoroutine(_moveCoroutine);
-            _moveCoroutine = StartCoroutine(RejectRoutine());
+            _moveCoroutine = StartCoroutine(RejectRoutine(targetPos));
         }
 
-        private System.Collections.IEnumerator RejectRoutine()
+        private System.Collections.IEnumerator RejectRoutine(Vector3 targetPos)
         {
-            // 1. Change sorting orders to be above the jar (11)
-            // Determine minimum current order to maintain relative offsets
-            int minOrder = int.MaxValue;
+            _isDropped = true; // Block other interactions
+
+            // 1. Change sorting orders to be above the jar (increased by offset base)
             foreach (var data in _beeSprites)
             {
-                if (data.Renderer != null && data.Renderer.sortingOrder < minOrder)
-                    minOrder = data.Renderer.sortingOrder;
+                if (data.Renderer != null) 
+                {
+                    data.Renderer.sortingOrder += _rejectSortingOrderBase;
+                }
             }
-
-            int offset = _rejectSortingOrderBase - minOrder;
-            foreach (var data in _beeSprites)
+ 
+            if (_textCanvas != null)
             {
-                if (data.Renderer != null) data.Renderer.sortingOrder += offset;
+                _textCanvas.sortingOrder += _rejectSortingOrderBase;
             }
 
-            // 2. Move away (down) from current position (the jar)
+            // 2. Move towards the target (jar) endpoint but with a vertical offset
             Vector3 startPos = transform.position;
-            Vector3 endPos = startPos + new Vector3(0, _rejectYOffset, 0);
+            Vector3 targetEndPos = targetPos + new Vector3(0, _rejectYOffset, 0);
             
-            float duration = 0.5f; // Fast rejection
+            // Calculate a consistent speed for the exit (similar to entry speed)
+            float speed = JarManager.Instance != null ? JarManager.Instance.DropSpeed : 500f;
+            float distance = Vector3.Distance(startPos, targetEndPos);
+            float duration = speed > 0 ? distance / speed : 1.0f;
+            
             float elapsed = 0f;
 
             while (elapsed < duration)
             {
                 elapsed += Time.deltaTime;
                 float t = elapsed / duration;
-                transform.position = Vector3.Lerp(startPos, endPos, t);
+                
+                // Linear Lerp to exit point
+                transform.position = Vector3.Lerp(startPos, targetEndPos, t);
                 yield return null;
             }
 

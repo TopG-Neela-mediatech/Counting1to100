@@ -7,12 +7,12 @@ namespace Counting1To100
     public class GameManager : GenericSingleton<GameManager>
     {
         // Events
-        public static event Action OnGameStarted;
+        public static event Action OnGameStarted, OnGameEnded;
         //public static event Action<Scene, LoadSceneMode> OnSceneLoaded;
         public static event Action OnSceneLoaded;
-        public static event Action OnLevelComplete;
-        public static event Action OnBonusRoundStart;
-    
+        public static event Action OnLevelComplete, OnNextLevel;
+        //public static event Action OnBonusRoundStart;
+
         // Game State
         public int CurrentLevelMin { get; private set; } = 1;
         public int CurrentLevelMax { get; private set; } = 10;
@@ -27,17 +27,17 @@ namespace Counting1To100
     
         private void OnEnable()
         {
-            SceneManager.sceneLoaded += HandleSceneLoaded;
+            // Subscriptions to other events if needed
         }
     
         private void OnDisable()
         {
-            SceneManager.sceneLoaded -= HandleSceneLoaded;
+            // Unsubscriptions
         }
-    
-        private void HandleSceneLoaded(Scene scene, LoadSceneMode mode)
+
+        private void Start()
         {
-            Debug.Log($"[GameManager] Scene Loaded: {scene.name}");
+            Debug.Log("[GameManager] Scene Ready. Invoking OnSceneLoaded.");
             OnSceneLoaded?.Invoke();
         }
     
@@ -57,7 +57,6 @@ namespace Counting1To100
         {
             if (matchCorrect)
             {
-                Debug.Log($"[GameManager] Match! {_currentMatches + 1}/{_matchesNeeded}");
                 _currentMatches++;
                 
                 if (_currentMatches >= _matchesNeeded)
@@ -67,9 +66,15 @@ namespace Counting1To100
             }
             else
             {
-                Debug.Log($"[GameManager] No Match.");
-                // Optional: Penalty?
+                // Optional: Game Over condition?
+                // EndGame();
             }
+        }
+
+        public void EndGame()
+        {
+            Debug.Log("[GameManager] Game Ended");
+            OnGameEnded?.Invoke();
         }
     
         public void CompleteLevel()
@@ -89,6 +94,7 @@ namespace Counting1To100
             _currentMatches = 0;
             
             Debug.Log($"Starting Next Level: {CurrentLevelMin}-{CurrentLevelMax}");
+            OnNextLevel?.Invoke();
             OnGameStarted?.Invoke(); // Re-trigger level start for subscribed spawners
             
             if (JarManager.Instance != null)
@@ -97,10 +103,10 @@ namespace Counting1To100
             }
         }
     
-        public void StartBonusRound()
-        {
-            Debug.Log("[GameManager] Bonus Round Started");
-            OnBonusRoundStart?.Invoke();
-        }
+        //public void StartBonusRound()
+        //{
+        //    Debug.Log("[GameManager] Bonus Round Started");
+        //    OnBonusRoundStart?.Invoke();
+        //}
     }
 }

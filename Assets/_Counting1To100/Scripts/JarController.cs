@@ -12,6 +12,7 @@ namespace Counting1To100
 
         public int Number => _targetNumber;
         public Transform DropTarget => _dropTarget != null ? _dropTarget : transform;
+        public bool IsCompleted => DropTarget.childCount > 0;
 
         // Static list removed in favor of JarManager
         
@@ -48,7 +49,6 @@ namespace Counting1To100
             // Check Matching Logic (Flexible)
             if (bee.Number == _targetNumber)
             {
-                Debug.Log($"Correct! Firefly {bee.Number} -> Jar {_targetNumber}");
                 if (GameManager.Instance != null)
                 {
                     // Pass true for valid match
@@ -65,14 +65,13 @@ namespace Counting1To100
             }
             else
             {
-                Debug.Log($"Wrong! Firefly {bee.Number} != Jar {_targetNumber}");
                 if (GameManager.Instance != null)
                 {
                     GameManager.Instance.CheckDrop(bee.Number, false);
                 }
                 
                 // Trigger the rejection animation (moves out/down with higher sorting order)
-                bee.RejectFromJar();
+                bee.RejectFromJar(DropTarget.transform.position);
             }
         }
         

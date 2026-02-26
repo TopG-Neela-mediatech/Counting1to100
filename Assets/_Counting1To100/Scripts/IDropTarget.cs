@@ -6,6 +6,7 @@ namespace Counting1To100
     {
         Transform DropTarget { get; }
         int Number { get; }
+        bool IsCompleted { get; }
         void ReceiveDrop(BeeController bee);
     }
 }

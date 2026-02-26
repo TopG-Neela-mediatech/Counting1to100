@@ -81,5 +81,18 @@ namespace Counting1To100
                 _jars[i].SetTargetNumber(startNum + i);
             }
         }
+
+        public List<int> GetAvailableTargetNumbers()
+        {
+            List<int> available = new List<int>();
+            foreach (var jar in _jars)
+            {
+                if (!jar.IsCompleted)
+                {
+                    available.Add(jar.Number);
+                }
+            }
+            return available;
+        }
     }
 }

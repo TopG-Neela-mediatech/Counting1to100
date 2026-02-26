@@ -1938,7 +1938,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f48bb1110c6cfa14b9d750c7f5baaf51, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _beePrefab: {fileID: -4754911852359561411, guid: 371b25bdbec133d49aae17ada19e2727, type: 3}
+  _beePrefabs:
+  - {fileID: 8526913004348938131, guid: 8ec59727343b453478d214add9af90d6, type: 3}
+  - {fileID: 5311166151715182451, guid: 31e921b0743da7240a71585163ea184c, type: 3}
+  - {fileID: 7387580301917780878, guid: ca8e1ca5d4fbdee4cadd32c9559e20b5, type: 3}
+  - {fileID: 1860144408747600258, guid: 71518f41f64b82346b7c23c34cad05b0, type: 3}
   _spawnPoint: {fileID: 12590921}
   _endPoint: {fileID: 1348619833}
   _spawnInterval: 1.8
@@ -1949,6 +1953,7 @@ MonoBehaviour:
   _maxBobAmplitude: 0.5
   _minNumber: 1
   _maxNumber: 10
+  _useSmartSpawning: 0
 --- !u!1 &1320894561
 GameObject:
   m_ObjectHideFlags: 0
