@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using System.Collections;
 
 namespace Counting1To100
 {
@@ -83,7 +84,13 @@ namespace Counting1To100
             OnLevelComplete?.Invoke();
             
             // Prepare Next Level
-            Invoke(nameof(StartNextLevel), 2f); // Short delay before next batch handling
+            StartCoroutine(NextLevelRoutine());
+        }
+
+        private IEnumerator NextLevelRoutine()
+        {
+            yield return new WaitForSeconds(2f);
+            StartNextLevel();
         }
     
         private void StartNextLevel()

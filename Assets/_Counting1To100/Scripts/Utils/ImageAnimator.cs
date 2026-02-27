@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -33,7 +34,7 @@ namespace Counting1To100
 
         private Image _image;
         private int _currentFrame;
-        private float _timer;
+        private Coroutine _animationCoroutine;
 
         public bool IsPlaying => _isPlaying;
 
@@ -50,17 +51,20 @@ namespace Counting1To100
             }
         }
 
-        private void Update()
+        private void OnDisable()
         {
-            if (!_isPlaying || _sprites == null || _sprites.Count == 0)
-                return;
+            Stop();
+        }
 
-            _timer += Time.deltaTime;
-            float frameDuration = 1f / Mathf.Max(0.001f, _frameRate);
-
-            if (_timer >= frameDuration)
+        private IEnumerator AnimationLoop()
+        {
+            while (_isPlaying && _sprites != null && _sprites.Count > 0)
             {
-                _timer -= frameDuration;
+                UpdateSprite();
+                
+                float frameDuration = 1f / Mathf.Max(0.001f, _frameRate);
+                yield return new WaitForSeconds(frameDuration);
+
                 _currentFrame++;
 
                 if (_currentFrame >= _sprites.Count)
@@ -73,18 +77,17 @@ namespace Counting1To100
                     {
                         _currentFrame = _sprites.Count - 1;
                         _isPlaying = false;
+                        UpdateSprite();
                         OnAnimationComplete?.Invoke();
-                        return; // Stop updating
+                        yield break;
                     }
                 }
-
-                UpdateSprite();
             }
         }
 
         private void UpdateSprite()
         {
-            if (_image != null && _currentFrame < _sprites.Count)
+            if (_image != null && _sprites != null && _currentFrame < _sprites.Count)
             {
                 _image.sprite = _sprites[_currentFrame];
             }
@@ -101,10 +104,11 @@ namespace Counting1To100
                 return;
             }
 
+            if (_animationCoroutine != null) StopCoroutine(_animationCoroutine);
+            
             _isPlaying = true;
             _currentFrame = 0;
-            _timer = 0f;
-            UpdateSprite();
+            _animationCoroutine = StartCoroutine(AnimationLoop());
         }
 
         /// <summary>
@@ -113,8 +117,9 @@ namespace Counting1To100
         public void Stop()
         {
             _isPlaying = false;
+            if (_animationCoroutine != null) StopCoroutine(_animationCoroutine);
+            _animationCoroutine = null;
             _currentFrame = 0;
-            _timer = 0f;
             UpdateSprite();
         }
 
@@ -124,6 +129,8 @@ namespace Counting1To100
         public void Pause()
         {
             _isPlaying = false;
+            if (_animationCoroutine != null) StopCoroutine(_animationCoroutine);
+            _animationCoroutine = null;
         }
 
         /// <summary>
@@ -131,9 +138,11 @@ namespace Counting1To100
         /// </summary>
         public void Resume()
         {
-            if (_sprites != null && _sprites.Count > 0)
+            if (_sprites != null && _sprites.Count > 0 && !_isPlaying)
             {
                 _isPlaying = true;
+                if (_animationCoroutine != null) StopCoroutine(_animationCoroutine);
+                _animationCoroutine = StartCoroutine(AnimationLoop());
             }
         }
 

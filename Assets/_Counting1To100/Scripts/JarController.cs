@@ -77,10 +77,24 @@ namespace Counting1To100
         
         public void ClearContent()
         {
-            // Destroy all child objects (Previous bees)
+            // Return all bees to pool instead of destroying them
+            List<BeeController> bees = new List<BeeController>();
             foreach (Transform child in DropTarget)
             {
-                Destroy(child.gameObject);
+                if (child.TryGetComponent(out BeeController bee))
+                {
+                    bees.Add(bee);
+                }
+                else
+                {
+                    // If it's not a bee (shouldn't happen with current logic), destroy it
+                    Destroy(child.gameObject);
+                }
+            }
+
+            foreach (var bee in bees)
+            {
+                bee.Despawn();
             }
         }
 

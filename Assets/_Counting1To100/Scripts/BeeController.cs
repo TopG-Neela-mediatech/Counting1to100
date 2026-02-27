@@ -66,7 +66,22 @@ namespace Counting1To100
         private Rigidbody2D _rb;
         private RectTransform _rectTransform;
         private Coroutine _moveCoroutine;
+        private Coroutine _animationCoroutine;
+
+        [Header("Animation Settings")]
+        [SerializeField] private float _dropScale = 0.35f;
+        [SerializeField] private float _dropScaleTriggerTime = 0.7f;
+        [SerializeField] private float _dropScaleDurationPercent = 0.3f;
+        [SerializeField] private float _noiseFrequency = 1.0f;
         
+        [Header("Internal Movement")]
+        [SerializeField] private float _jarMinX = -0.6f;
+        [SerializeField] private float _jarMaxX = 0.6f;
+        [SerializeField] private float _jarMinY = -0.25f;
+        [SerializeField] private float _jarMaxY = 1.25f;
+        [SerializeField] private float _wanderSpeed = 0.5f;
+        [SerializeField] private float _wanderChangeInterval = 2f;
+
         // Event for Pooled Despawning
         public event System.Action<BeeController> OnDespawn;
 
@@ -104,7 +119,15 @@ namespace Counting1To100
 
         private void OnEnable()
         {
-            StartCoroutine(AnimationRoutine());
+            if (_animationCoroutine != null) StopCoroutine(_animationCoroutine);
+            _animationCoroutine = StartCoroutine(AnimationRoutine());
+        }
+
+        private void OnDisable()
+        {
+            StopAllCoroutines();
+            _moveCoroutine = null;
+            _animationCoroutine = null;
         }
 
         private System.Collections.IEnumerator AnimationRoutine()
@@ -167,7 +190,7 @@ namespace Counting1To100
                 
                 // Calculate Dynamic Amplitude using Perlin Noise
                 // Frequency of 1.0f means smooth variation over ~1 second scale
-                float noise = Mathf.PerlinNoise(Time.time * 1.0f + noiseSeed, 0f); 
+                float noise = Mathf.PerlinNoise(Time.time * _noiseFrequency + noiseSeed, 0f); 
                 float currentAmplitude = Mathf.Lerp(minBobAmplitude, maxBobAmplitude, noise);
 
                 // Add Bobbing
@@ -222,21 +245,6 @@ namespace Counting1To100
             if (_numberText != null)
             {
                 _numberText.text = number.ToString();
-            }
-        }
-
-        public Color _color;
-
-        [ContextMenu("Set Custom Color")]
-
-        public void SetColor()
-        {
-            foreach (var data in _beeSprites)
-            {
-                if (data.Renderer != null)
-                {
-                    data.Renderer.color = _color;
-                }
             }
         }
 
@@ -369,10 +377,10 @@ namespace Counting1To100
                 transform.position = Vector3.Lerp(startPos, endPos, t);
 
                 // 2. Scale Down (Shrink into Jar) - Trigger in last 30%
-                if (t > 0.7f) 
+                if (t > _dropScaleTriggerTime) 
                 {
-                     float scaleT = (t - 0.7f) / 0.3f; // Normalize 0 to 1 over the last 30%
-                     transform.localScale = Vector3.Lerp(startScale, Vector3.one * 0.35f, scaleT);
+                     float scaleT = (t - _dropScaleTriggerTime) / _dropScaleDurationPercent; // Normalize 0 to 1 over the last 30%
+                     transform.localScale = Vector3.Lerp(startScale, Vector3.one * _dropScale, scaleT);
                 }
 
                 yield return null;
@@ -380,7 +388,7 @@ namespace Counting1To100
 
             // Ensure Scale is Target and Position is Target
             transform.position = endPos;
-            transform.localScale = Vector3.one * 0.35f;
+            transform.localScale = Vector3.one * _dropScale;
             
             // Manual Callback to Interaction
             target.ReceiveDrop(this);
@@ -393,7 +401,36 @@ namespace Counting1To100
             if (_rb) _rb.simulated = false;
             if (GetComponent<Collider2D>()) GetComponent<Collider2D>().enabled = false;
             
-            // Keep script active for animations
+            // Start wandering inside the jar
+            _moveCoroutine = StartCoroutine(WanderRoutine());
+        }
+
+        private System.Collections.IEnumerator WanderRoutine()
+        {
+            Vector3 targetLocalPos = GetRandomInternalPosition();
+
+            while (true)
+            {
+                // Smoothly move towards a random target within bounds
+                while (Vector3.Distance(transform.localPosition, targetLocalPos) > 0.05f)
+                {
+                    transform.localPosition = Vector3.MoveTowards(transform.localPosition, targetLocalPos, _wanderSpeed * Time.deltaTime);
+                    yield return null;
+                }
+
+                // Wait at target for a bit of variation
+                yield return new WaitForSeconds(Random.Range(_wanderChangeInterval, 0.5f));
+
+                // Pick a new random target
+                targetLocalPos = GetRandomInternalPosition();
+            }
+        }
+
+        private Vector3 GetRandomInternalPosition()
+        {
+            float x = Random.Range(_jarMinX, _jarMaxX);
+            float y = Random.Range(_jarMinY, _jarMaxY);
+            return new Vector3(x, y, 0f);
         }
 
         // --- Visual Animation Helpers ---

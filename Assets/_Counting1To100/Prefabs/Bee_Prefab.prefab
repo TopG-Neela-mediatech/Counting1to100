@@ -177,6 +177,16 @@ MonoBehaviour:
   _rejectYOffset: -2
   _rejectSortingOrderBase: 12
   _textCanvas: {fileID: 6904234340698500715}
+  _dropScale: 0.35
+  _dropScaleTriggerTime: 0.7
+  _dropScaleDurationPercent: 0.3
+  _noiseFrequency: 1
+  _jarMinX: -0.6
+  _jarMaxX: 0.6
+  _jarMinY: -0.25
+  _jarMaxY: 1.25
+  _wanderSpeed: 2
+  _wanderChangeInterval: 0.5
 --- !u!61 &6776521926178417104
 BoxCollider2D:
   m_ObjectHideFlags: 0
