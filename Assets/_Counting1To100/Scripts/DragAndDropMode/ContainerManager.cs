@@ -20,11 +20,53 @@ namespace Counting1To100.DragAndDropMode
             }
         }
 
+        private void OnEnable()
+        {
+            GameManager.OnGameStarted += UpdateContainerNumbers;
+            GameManager.OnNextLevel += UpdateContainerNumbers;
+        }
+
+        private void OnDisable()
+        {
+            GameManager.OnGameStarted -= UpdateContainerNumbers;
+            GameManager.OnNextLevel -= UpdateContainerNumbers;
+        }
+
         public void RegisterContainer(IDragContainer container)
         {
             if (!_containers.Contains(container))
             {
                 _containers.Add(container);
+            }
+        }
+
+        private void ShuffleContainers()
+        {
+            // Fisher-Yates shuffle to randomize the order of containers
+            for (int i = _containers.Count - 1; i > 0; i--)
+            {
+                int rnd = Random.Range(0, i + 1);
+                IDragContainer temp = _containers[i];
+                _containers[i] = _containers[rnd];
+                _containers[rnd] = temp;
+            }
+        }
+
+        public void UpdateContainerNumbers()
+        {
+            if (GameManager.Instance == null) return;
+            
+            // Randomize which container gets which number
+            ShuffleContainers();
+
+            int startNum = GameManager.Instance.CurrentLevelMin;
+            for (int i = 0; i < _containers.Count; i++)
+            {
+                if (_containers[i] is FlowerContainerController flower)
+                {
+                    flower.ClearContent();
+                    flower.SetTargetNumber(startNum + i);
+                }
             }
         }
 

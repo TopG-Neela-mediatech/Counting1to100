@@ -12,18 +12,35 @@ namespace Counting1To100.DragAndDropMode
         [Header("Spawning Settings")]
         [SerializeField] private float _spawnInterval = 3f;
         [SerializeField] private float _bugFlightSpeed = 100f; // Screen units per second crossing
-        
-        [Header("Screen Edge Spawning")]
-        // These bounds should correspond to your camera's world extents
-        [SerializeField] private float _cameraWorldWidth = 15f; 
-        [SerializeField] private float _cameraWorldHeight = 10f; 
+        [SerializeField] private Transform _spawnParent;
+        [SerializeField] private Camera _mainCamera;
 
+        [Header("Screen Edge Spawning")]
+        [SerializeField] private float _offscreenOffset = 2f; 
+
+        private float _halfWidth;
+        private float _halfHeight;
         private bool _isSpawning = false;
         private Coroutine _spawnCoroutine;
         private ObjectPool<BugController> _bugPool;
 
         private void Awake()
         {
+            if (_mainCamera == null) _mainCamera = Camera.main;
+            
+            // Calculate world-space bounds from camera
+            if (_mainCamera != null && _mainCamera.orthographic)
+            {
+                _halfHeight = _mainCamera.orthographicSize + _offscreenOffset;
+                _halfWidth = (_mainCamera.orthographicSize * _mainCamera.aspect) + _offscreenOffset;
+            }
+            else
+            {
+                // Fallback for non-orthographic or missing camera
+                _halfHeight = 10f; 
+                _halfWidth = 15f;
+            }
+
             if (_bugPrefabs != null && _bugPrefabs.Count > 0)
             {
                 _bugPool = new ObjectPool<BugController>(
@@ -89,16 +106,20 @@ namespace Counting1To100.DragAndDropMode
             bug.SetNumber(number);
 
             CalculateCrossScreenPath(out Vector3 startPos, out Vector3 endPos);
+            
+            // Parent first so coordinates are relative to the canvas if intended
+            if (_spawnParent != null)
+            {
+                bug.transform.SetParent(_spawnParent);
+            }
 
+            // Set positions - using transform.position ensures world space consistency initially
             bug.transform.position = startPos;
-            bug.InitializeFlight(endPos, _bugFlightSpeed);
+            bug.InitializeFlight(endPos, _bugFlightSpeed, _mainCamera);
         }
 
         private void CalculateCrossScreenPath(out Vector3 startPos, out Vector3 endPos)
         {
-            float halfW = _cameraWorldWidth / 2f;
-            float halfH = _cameraWorldHeight / 2f;
-
             startPos = Vector3.zero;
             endPos = Vector3.zero;
 
@@ -109,20 +130,20 @@ namespace Counting1To100.DragAndDropMode
             switch (edge)
             {
                 case 0: // Top to Bottom
-                    startPos = new Vector3(Random.Range(-halfW, halfW), halfH, 0);
-                    endPos = new Vector3(Random.Range(-halfW, halfW), -halfH, 0);
+                    startPos = new Vector3(Random.Range(-_halfWidth, _halfWidth), _halfHeight, 0);
+                    endPos = new Vector3(Random.Range(-_halfWidth, _halfWidth), -_halfHeight, 0);
                     break;
                 case 1: // Right to Left
-                    startPos = new Vector3(halfW, Random.Range(-halfH, halfH), 0);
-                    endPos = new Vector3(-halfW, Random.Range(-halfH, halfH), 0);
+                    startPos = new Vector3(_halfWidth, Random.Range(-_halfHeight, _halfHeight), 0);
+                    endPos = new Vector3(-_halfWidth, Random.Range(-_halfHeight, _halfHeight), 0);
                     break;
                 case 2: // Bottom to Top
-                    startPos = new Vector3(Random.Range(-halfW, halfW), -halfH, 0);
-                    endPos = new Vector3(Random.Range(-halfW, halfW), halfH, 0);
+                    startPos = new Vector3(Random.Range(-_halfWidth, _halfWidth), -_halfHeight, 0);
+                    endPos = new Vector3(Random.Range(-_halfWidth, _halfWidth), _halfHeight, 0);
                     break;
                 case 3: // Left to Right
-                    startPos = new Vector3(-halfW, Random.Range(-halfH, halfH), 0);
-                    endPos = new Vector3(halfW, Random.Range(-halfH, halfH), 0);
+                    startPos = new Vector3(-_halfWidth, Random.Range(-_halfHeight, _halfHeight), 0);
+                    endPos = new Vector3(_halfWidth, Random.Range(-_halfHeight, _halfHeight), 0);
                     break;
             }
         }
