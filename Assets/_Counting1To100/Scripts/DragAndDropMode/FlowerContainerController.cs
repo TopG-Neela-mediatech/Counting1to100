@@ -9,12 +9,14 @@ namespace Counting1To100.DragAndDropMode
         [SerializeField] private int _targetNumber;
         [SerializeField] private TextMeshProUGUI _numberText;
         [SerializeField] private Transform _flowerHeadTransform; // Replaces 'DropTarget'
-
+        [SerializeField, Range(1f,2f)] private float _pulseFactor;
         public Transform ContainerTransform => _flowerHeadTransform != null ? _flowerHeadTransform : transform;
         public int TargetNumber => _targetNumber;
         
         // This assumes each flower takes one bug. If multiple, change the logic
         public bool IsCompleted => ContainerTransform.childCount > 0;
+
+        private Coroutine _pulseCoroutine;
 
         private void Start()
         {
@@ -45,7 +47,8 @@ namespace Counting1To100.DragAndDropMode
         {
             if (bug == null) return;
 
-            if (bug.Number == _targetNumber)
+            // PREVENT DOUBLE DROP: Check if we already have a bug here
+            if (bug.Number == _targetNumber && !IsCompleted)
             {
                 if (GameManager.Instance != null)
                 {
@@ -55,15 +58,20 @@ namespace Counting1To100.DragAndDropMode
 
                 bug.transform.SetParent(ContainerTransform);
                 bug.BecomeDecoration();
+
+                // Trigger Pulse feedback
+                if (_pulseCoroutine != null) StopCoroutine(_pulseCoroutine);
+                _pulseCoroutine = StartCoroutine(PulseRoutine());
             }
             else
             {
-                if (GameManager.Instance != null)
+                // Wrong number OR the flower is already occupied
+                if (GameManager.Instance != null && !IsCompleted)
                 {
+                    // Only penalize if it was a wrong number attempt, not just overlapping icons
                     GameManager.Instance.CheckDrop(bug.Number, false);
                 }
                 
-                // We will add rejection to BugController soon
                 bug.RejectFlight();
             }
         }
@@ -87,6 +95,39 @@ namespace Counting1To100.DragAndDropMode
              {
                  b.Despawn();
              }
+        }
+
+        private System.Collections.IEnumerator PulseRoutine()
+        {
+            float duration = 0.3f;
+            float halfDuration = duration / 2f;
+            float elapsed = 0f;
+            
+            Vector3 baseScale = transform.localScale;
+            
+            // Fallback in case the inspector value hasn't been set yet and is evaluating to 0
+            float factor = _pulseFactor > 0.1f ? _pulseFactor : 1.25f;
+            
+            Vector3 maxScale = baseScale * factor; 
+
+            // Scale Up
+            while (elapsed < halfDuration)
+            {
+                elapsed += Time.deltaTime;
+                transform.localScale = Vector3.Lerp(baseScale, maxScale, elapsed / halfDuration);
+                yield return null;
+            }
+
+            // Scale Down
+            elapsed = 0f;
+            while (elapsed < halfDuration)
+            {
+                elapsed += Time.deltaTime;
+                transform.localScale = Vector3.Lerp(maxScale, baseScale, elapsed / halfDuration);
+                yield return null;
+            }
+
+            transform.localScale = baseScale;
         }
     }
 }

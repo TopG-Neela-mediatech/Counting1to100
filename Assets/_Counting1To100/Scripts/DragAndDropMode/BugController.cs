@@ -47,11 +47,12 @@ namespace Counting1To100.DragAndDropMode
         [SerializeField] private float _jarMaxY = 1.25f;
         [SerializeField] private float _wanderSpeed = 0.5f;
         [SerializeField] private float _wanderChangeInterval = 2f;
-        [SerializeField] private float _jumpHeight = 2.5f; // Increased default power
+        [SerializeField] private float _jumpHeight = 5.0f; // Increased default power
 
         [Header("Visuals")]
         [SerializeField] private System.Collections.Generic.List<BugSpriteData> _bugSprites;
         [SerializeField] private Canvas _textCanvas;
+        [SerializeField] private int _baseSortingOrderBonus = 15; // Above jars
         [SerializeField] private int _dragSortingOrderBonus = 50;
 
         public int Number { get; private set; }
@@ -75,6 +76,7 @@ namespace Counting1To100.DragAndDropMode
         private float _flightDuration;
         private float _flightElapsed;
         private Vector3 _flightStartPosition;
+        private Vector3 _dragStartPosition;
 
         private void Awake()
         {
@@ -134,7 +136,10 @@ namespace Counting1To100.DragAndDropMode
         {
             _mainCamera = mainCamera;
             _isDropped = false;
-            //ResetSortingOrders();
+            
+            // Apply base sorting order to appear above jars
+            SetSortingOrder(_baseSortingOrderBonus);
+            
             transform.localScale = Vector3.one;
             transform.rotation = Quaternion.identity;
 
@@ -157,6 +162,12 @@ namespace Counting1To100.DragAndDropMode
             while (_flightElapsed < _flightDuration)
             {
                 if (_isDropped) yield break; // Paused by drag
+
+                if (GameManager.Instance != null && GameManager.Instance.IsTutorialActive)
+                {
+                    yield return null;
+                    continue;
+                }
 
                 _flightElapsed += Time.deltaTime;
                 float t = _flightElapsed / _flightDuration;
@@ -185,15 +196,14 @@ namespace Counting1To100.DragAndDropMode
 
             // Pause flight
             if (_moveCoroutine != null) StopCoroutine(_moveCoroutine);
+            
+            _dragStartPosition = transform.position;
 
             // Fetch canvas for coordinate conversion if needed
             if (_parentCanvas == null) _parentCanvas = GetComponentInParent<Canvas>();
 
             // Visual bump so it appears "held"
-            foreach (var data in _bugSprites)
-                if (data.Renderer != null) data.Renderer.sortingOrder = data.OriginalOrder + _dragSortingOrderBonus;
-            
-            if (_textCanvas != null) _textCanvas.sortingOrder = _originalTextSortingOrder + _dragSortingOrderBonus;
+            SetSortingOrder(_baseSortingOrderBonus + _dragSortingOrderBonus);
         }
 
         public void OnDrag(PointerEventData eventData)
@@ -222,7 +232,7 @@ namespace Counting1To100.DragAndDropMode
         {
             if (_isDropped) return;
 
-            ResetSortingOrders();
+            SetSortingOrder(_baseSortingOrderBonus);
 
             IDragContainer container = null;
             if (ContainerManager.Instance != null)
@@ -251,28 +261,40 @@ namespace Counting1To100.DragAndDropMode
 
         public void RejectFlight()
         {
-            // Bug was wrong number. Fly upwards and fade out or just despawn after a bit
+            _isDropped = true; // Prevent dragging while it zooms away
             if (_moveCoroutine != null) StopCoroutine(_moveCoroutine);
-            _moveCoroutine = StartCoroutine(RejectRoutine());
+            // Revert parent back to canvas if it was parented to the flower momentarily
+            if (_parentCanvas != null) transform.SetParent(_parentCanvas.transform);
+            
+            _moveCoroutine = StartCoroutine(RejectZoomOutRoutine());
         }
 
-        private System.Collections.IEnumerator RejectRoutine()
+        private System.Collections.IEnumerator RejectZoomOutRoutine()
         {
-            // Simple upward float away
-            float elapsed = 0;
+            float duration = 0.75f;
+            float elapsed = 0f;
             Vector3 startP = transform.position;
-            Vector3 endP = startP + new Vector3(0, 3f, 0);
+            
+            // Pick a random direction
+            float angle = Random.Range(0f, 360f);
+            Vector3 direction = new Vector3(Mathf.Cos(angle * Mathf.Deg2Rad), Mathf.Sin(angle * Mathf.Deg2Rad), 0f).normalized;
+            
+            // Move it far enough to definitely be off-screen
+            Vector3 targetP = startP + (direction * 30f);
 
             // Boost sorting order so it doesn't clip behind flowers while rejecting
-            foreach (var data in _bugSprites)
-                if (data.Renderer != null) data.Renderer.sortingOrder = data.OriginalOrder + 10;
+            SetSortingOrder(_baseSortingOrderBonus + 10);
                 
-            while(elapsed < 1f)
+            while (elapsed < duration)
             {
                 elapsed += Time.deltaTime;
-                transform.position = Vector3.Lerp(startP, endP, elapsed / 1f);
+                float t = elapsed / duration;
+                // Ease in for a 'zoom away' effect
+                float easeInT = t * t * t; 
+                transform.position = Vector3.Lerp(startP, targetP, easeInT);
                 yield return null;
             }
+            
             Despawn();
         }
 
@@ -324,18 +346,34 @@ namespace Counting1To100.DragAndDropMode
         private System.Collections.IEnumerator FlowerWanderRoutine()
         {
             Vector3 targetLocalPos = GetRandomFlowerPosition();
+            Vector3 velocity = Vector3.zero;
 
             while (true)
             {
-                while (Vector3.Distance(transform.localPosition, targetLocalPos) > 0.05f)
+                // SmoothDamp provides a very natural, organic ease-in/ease-out movement
+                transform.localPosition = Vector3.SmoothDamp(
+                    transform.localPosition, 
+                    targetLocalPos, 
+                    ref velocity, 
+                    _wanderSpeed // Represents "smooth time" here, lower is faster
+                );
+
+                // Optional: Rotate slightly towards movement direction
+                if (velocity.sqrMagnitude > 0.01f)
                 {
-                    transform.localPosition = Vector3.MoveTowards(transform.localPosition, targetLocalPos, _wanderSpeed * Time.deltaTime);
-                    yield return null;
+                    float angle = Mathf.Atan2(velocity.y, velocity.x) * Mathf.Rad2Deg;
+                    Quaternion targetRot = Quaternion.Euler(0, 0, angle - 90f); // Assuming bug faces 'up' visually
+                    transform.localRotation = Quaternion.Slerp(transform.localRotation, targetRot, Time.deltaTime * 5f);
                 }
 
-                yield return new WaitForSeconds(Random.Range(0.5f, _wanderChangeInterval));
+                // If we are close enough to the target, wait and pick a new one
+                if (Vector3.Distance(transform.localPosition, targetLocalPos) < 0.05f)
+                {
+                    yield return new WaitForSeconds(Random.Range(0.5f, _wanderChangeInterval));
+                    targetLocalPos = GetRandomFlowerPosition();
+                }
 
-                targetLocalPos = GetRandomFlowerPosition();
+                yield return null;
             }
         }
 
@@ -364,11 +402,18 @@ namespace Counting1To100.DragAndDropMode
 
         private void ResetSortingOrders()
         {
+            SetSortingOrder(0); // 0 bonus = original orders
+        }
+
+        private void SetSortingOrder(int bonus)
+        {
             foreach (var data in _bugSprites)
             {
-                if (data.Renderer != null) data.Renderer.sortingOrder = data.OriginalOrder;
+                if (data.Renderer != null) 
+                    data.Renderer.sortingOrder = data.OriginalOrder + bonus;
             }
-            if (_textCanvas != null) _textCanvas.sortingOrder = _originalTextSortingOrder;
+            if (_textCanvas != null) 
+                _textCanvas.sortingOrder = _originalTextSortingOrder + bonus;
         }
 
         // --- Visual Animation Helpers ---

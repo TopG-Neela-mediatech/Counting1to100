@@ -7,16 +7,29 @@ namespace Counting1To100
 {
     public class GameManager : GenericSingleton<GameManager>
     {
+        [Header("Level Configurations")]
+        [SerializeField] private System.Collections.Generic.List<LevelData> _levels;
+        
+        private int _currentLevelIndex = 0;
+        public LevelData CurrentLevelData => 
+            (_levels != null && _currentLevelIndex >= 0 && _currentLevelIndex < _levels.Count) ? _levels[_currentLevelIndex] : null;
+
         // Events
-        public static event Action OnGameStarted, OnGameEnded;
-        //public static event Action<Scene, LoadSceneMode> OnSceneLoaded;
         public static event Action OnSceneLoaded;
-        public static event Action OnLevelComplete, OnNextLevel;
-        //public static event Action OnBonusRoundStart;
+        public static event Action OnGameStarted;
+        public static event Action OnLevelComplete;
+        public static event Action OnNextLevel;
+        public static event Action OnGameEnded;
+        
+        public static event Action OnTutorialStarted;
+        public static event Action OnTutorialEnded;
+
+        // Tutorial State
+        public bool IsTutorialActive { get; private set; } = false;
 
         // Game State
-        public int CurrentLevelMin { get; private set; } = 1;
-        public int CurrentLevelMax { get; private set; } = 10;
+        public int CurrentLevelMin => CurrentLevelData != null ? CurrentLevelData.LevelMin : 1;
+        public int CurrentLevelMax => CurrentLevelData != null ? CurrentLevelData.LevelMax : 10;
         
         private int _matchesNeeded = 10;
         private int _currentMatches = 0;
@@ -26,16 +39,6 @@ namespace Counting1To100
             base.Awake();
         }
     
-        private void OnEnable()
-        {
-            // Subscriptions to other events if needed
-        }
-    
-        private void OnDisable()
-        {
-            // Unsubscriptions
-        }
-
         private void Start()
         {
             Debug.Log("[GameManager] Scene Ready. Invoking OnSceneLoaded.");
@@ -45,10 +48,8 @@ namespace Counting1To100
         public void StartGame()
         {
             Debug.Log("[GameManager] Game Started");
-            // Reset Level 1
-            CurrentLevelMin = 1;
-            CurrentLevelMax = 10;
-            _matchesNeeded = 10;
+            _currentLevelIndex = 0;
+            _matchesNeeded = 10; // This could also be logic based like (CurrentLevelMax - CurrentLevelMin + 1)
             _currentMatches = 0;
             
             OnGameStarted?.Invoke();
@@ -64,11 +65,6 @@ namespace Counting1To100
                 {
                     CompleteLevel();
                 }
-            }
-            else
-            {
-                // Optional: Game Over condition?
-                // EndGame();
             }
         }
 
@@ -95,25 +91,34 @@ namespace Counting1To100
     
         private void StartNextLevel()
         {
-            // 1-10 -> 11-20
-            CurrentLevelMin += 10;
-            CurrentLevelMax += 10;
+            _currentLevelIndex++;
+            
+            if (_levels != null && _currentLevelIndex >= _levels.Count)
+            {
+                // No more levels
+                EndGame();
+                return;
+            }
+
             _currentMatches = 0;
             
             Debug.Log($"Starting Next Level: {CurrentLevelMin}-{CurrentLevelMax}");
             OnNextLevel?.Invoke();
-            OnGameStarted?.Invoke(); // Re-trigger level start for subscribed spawners
-            
-            if (JarManager.Instance != null)
-            {
-                JarManager.Instance.UpdateJarNumbers();
-            }
+            OnGameStarted?.Invoke(); 
         }
-    
-        //public void StartBonusRound()
-        //{
-        //    Debug.Log("[GameManager] Bonus Round Started");
-        //    OnBonusRoundStart?.Invoke();
-        //}
+
+        public void StartTutorial()
+        {
+            IsTutorialActive = true;
+            Debug.Log("[GameManager] Tutorial Started");
+            OnTutorialStarted?.Invoke();
+        }
+
+        public void EndTutorial()
+        {
+            IsTutorialActive = false;
+            Debug.Log("[GameManager] Tutorial Ended");
+            OnTutorialEnded?.Invoke();
+        }
     }
 }
