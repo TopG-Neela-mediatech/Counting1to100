@@ -78,45 +78,52 @@ namespace Counting1To100
             Vector3 bugStartPos = Camera.main != null ? Camera.main.ViewportToWorldPoint(new Vector3(0.5f, 0.2f, 10f)) : new Vector3(0, -3f, 0);
             bugStartPos.z = 0;
 
-            _dummyBug = Instantiate(levelData.BugPrefab, _tutorialElementsParent != null ? _tutorialElementsParent : transform);
-            _dummyBug.transform.position = bugStartPos;
-            _dummyBug.SetNumber(targetNumber);
-            
-            // "Disable" normal flight logic by flying it to its own exact position instantly
-            _dummyBug.InitializeFlight(bugStartPos, 100f, Camera.main); 
-
-            // 5. Play Drag Animation loops
-            if (_handPointer != null)
+            BugController tutorialPrefab = (levelData.BugPrefabs != null && levelData.BugPrefabs.Count > 0) ? levelData.BugPrefabs[0] : null;
+            if (tutorialPrefab != null)
             {
-                _handPointer.gameObject.SetActive(true);
-                
-                for (int i = 0; i < _loops; i++)
-                {
-                    _handPointer.position = bugStartPos;
-                    float elapsed = 0f;
-                    
-                    Vector3 targetPos = targetContainer.ContainerTransform.position;
-                    
-                    while (elapsed < _animationDuration)
-                    {
-                        elapsed += Time.unscaledDeltaTime; // Unscaled in case timeScale = 0 is used elsewhere
-                        float t = elapsed / _animationDuration;
-                        
-                        // simple ease out
-                        t = Mathf.Sin(t * Mathf.PI * 0.5f);
-                        
-                        _handPointer.position = Vector3.Lerp(bugStartPos, targetPos, t);
-                        yield return null;
-                    }
-                    
-                    yield return new WaitForSecondsRealtime(0.5f);
-                }
-                
-                _handPointer.gameObject.SetActive(false);
+                _dummyBug = Instantiate(tutorialPrefab, _tutorialElementsParent != null ? _tutorialElementsParent : transform);
             }
+            if (_dummyBug != null)
+            {
+                _dummyBug.transform.position = bugStartPos;
+                _dummyBug.SetNumber(targetNumber);
 
-            // 6. Cleanup & Unpause
-            EndTutorial();
+                // "Disable" normal flight logic by flying it to its own exact position instantly
+                _dummyBug.InitializeFlight(bugStartPos, 100f, Camera.main);
+
+                // 5. Play Drag Animation loops
+                if (_handPointer != null)
+                {
+                    _handPointer.gameObject.SetActive(true);
+
+                    for (int i = 0; i < _loops; i++)
+                    {
+                        _handPointer.position = bugStartPos;
+                        float elapsed = 0f;
+
+                        Vector3 targetPos = targetContainer.ContainerTransform.position;
+
+                        while (elapsed < _animationDuration)
+                        {
+                            elapsed += Time.unscaledDeltaTime; // Unscaled in case timeScale = 0 is used elsewhere
+                            float t = elapsed / _animationDuration;
+
+                            // simple ease out
+                            t = Mathf.Sin(t * Mathf.PI * 0.5f);
+
+                            _handPointer.position = Vector3.Lerp(bugStartPos, targetPos, t);
+                            yield return null;
+                        }
+
+                        yield return new WaitForSecondsRealtime(0.5f);
+                    }
+
+                    _handPointer.gameObject.SetActive(false);
+                }
+
+                // 6. Cleanup & Unpause
+                EndTutorial();
+            }
         }
 
         private void EndTutorial()

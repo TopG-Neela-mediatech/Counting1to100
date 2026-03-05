@@ -302,7 +302,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0.29999998, y: 3.8600001, z: 0}
-  m_LocalScale: {x: 1.4999999, y: 2, z: 1}
+  m_LocalScale: {x: 2, y: 2, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 3951587777630422423}
@@ -637,6 +637,7 @@ MonoBehaviour:
   _targetNumber: 0
   _numberText: {fileID: 6353938290314013454}
   _flowerHeadTransform: {fileID: 8111843639977312130}
+  _flowerSR: {fileID: 4176430759314591715}
   _pulseFactor: 1.5
 --- !u!1 &8369315851905817176
 GameObject:
@@ -663,8 +664,8 @@ Transform:
   m_GameObject: {fileID: 8369315851905817176}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.24500053, y: 3.867, z: 0}
-  m_LocalScale: {x: 0.45, y: 0.45, z: 0.45}
+  m_LocalPosition: {x: 0.37, y: 4.74, z: 0}
+  m_LocalScale: {x: 0.65, y: 0.65, z: 0.65}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 3951587777630422423}

@@ -6,6 +6,7 @@ namespace Counting1To100.DragAndDropMode
     {
         [Header("Spawning")]
         [SerializeField] private Transform _spawnParent;
+        [SerializeField] private Sprite[] _sprites;
 
         public static ContainerManager Instance { get; private set; }
 
@@ -36,9 +37,9 @@ namespace Counting1To100.DragAndDropMode
         private void SetupContainersForLevel()
         {
             if (GameManager.Instance == null || GameManager.Instance.CurrentLevelData == null) return;
-            
+
             var levelData = GameManager.Instance.CurrentLevelData;
-            
+
             // Clear existing
             foreach (var container in _containers)
             {
@@ -57,7 +58,12 @@ namespace Counting1To100.DragAndDropMode
                 GameObject obj = Instantiate(levelData.ContainerPrefab, _spawnParent);
                 obj.transform.localScale = Vector3.one;
                 obj.transform.localPosition = Vector3.zero;
-                
+
+                // instead of taking reference of ContainerPrefab as GameObject we can use the type to be FlowerContainerController
+                FlowerContainerController container = obj.GetComponent<FlowerContainerController>();
+                container.ChangeSprite(_sprites[Random.Range(0, _sprites.Length - 1)]);
+
+
                 IDragContainer comp = obj.GetComponent<IDragContainer>();
                 if (comp != null && !_containers.Contains(comp))
                 {
@@ -86,7 +92,7 @@ namespace Counting1To100.DragAndDropMode
         public void UpdateContainerNumbers()
         {
             if (GameManager.Instance == null || _containers == null || _containers.Count == 0) return;
-            
+
             // Sort containers left to right to assign numbers sequentially
             SortContainers();
 
@@ -116,7 +122,7 @@ namespace Counting1To100.DragAndDropMode
         public IDragContainer GetValidDropContainer(Vector2 position, float radius = 2f)
         {
             IDragContainer closest = null;
-            float minDistance = radius; 
+            float minDistance = radius;
 
             foreach (var container in _containers)
             {

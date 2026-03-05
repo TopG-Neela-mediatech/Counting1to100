@@ -19,7 +19,8 @@ namespace Counting1To100.DragAndDropMode
         private float _halfHeight;
         private bool _isSpawning = false;
         private Coroutine _spawnCoroutine;
-        private ObjectPool<BugController> _bugPool;
+        private System.Collections.Generic.List<ObjectPool<BugController>> _bugPools;
+        private int _nextPrefabIndex = 0; // Round-robin index
 
         private void Awake()
         {
@@ -58,9 +59,12 @@ namespace Counting1To100.DragAndDropMode
             StopSpawning();
             
             // Clean up old bugs and pool before switching levels
-            if (_bugPool != null) 
+            if (_bugPools != null) 
             {
-                _bugPool.Clear();
+                foreach (var pool in _bugPools)
+                {
+                    pool.Clear();
+                }
                 var existingBugs = FindObjectsByType<BugController>(FindObjectsSortMode.None);
                 foreach (var b in existingBugs) 
                 {
@@ -69,21 +73,28 @@ namespace Counting1To100.DragAndDropMode
             }
 
             var levelData = GameManager.Instance?.CurrentLevelData;
-            if (levelData != null && levelData.BugPrefab != null)
+            if (levelData != null && levelData.BugPrefabs != null && levelData.BugPrefabs.Count > 0)
             {
-                _bugPool = new ObjectPool<BugController>(
-                    createFunc: () => Instantiate(levelData.BugPrefab, transform),
-                    actionOnGet: (bug) => { bug.gameObject.SetActive(true); bug.OnDespawn += ReleaseBug; },
-                    actionOnRelease: (bug) => { bug.OnDespawn -= ReleaseBug; bug.gameObject.SetActive(false); },
-                    actionOnDestroy: (bug) => Destroy(bug.gameObject),
-                    collectionCheck: true,
-                    defaultCapacity: 10,
-                    maxSize: 50
-                );
+                _bugPools = new System.Collections.Generic.List<ObjectPool<BugController>>();
+                foreach (var prefab in levelData.BugPrefabs)
+                {
+                    if (prefab == null) continue;
+                    var capturedPrefab = prefab; // capture for closure
+                    _bugPools.Add(new ObjectPool<BugController>(
+                        createFunc: () => Instantiate(capturedPrefab, transform),
+                        actionOnGet: (bug) => { bug.gameObject.SetActive(true); bug.OnDespawn += ReleaseBug; },
+                        actionOnRelease: (bug) => { bug.OnDespawn -= ReleaseBug; bug.gameObject.SetActive(false); },
+                        actionOnDestroy: (bug) => Destroy(bug.gameObject),
+                        collectionCheck: true,
+                        defaultCapacity: 10,
+                        maxSize: 50
+                    ));
+                }
+                _nextPrefabIndex = 0;
             }
             else
             {
-                Debug.LogWarning("[DirectionalBugSpawner] No BugPrefab found in current LevelData!");
+                Debug.LogWarning("[DirectionalBugSpawner] No BugPrefabs found in current LevelData!");
                 return;
             }
 
@@ -131,8 +142,13 @@ namespace Counting1To100.DragAndDropMode
 
         private void SpawnBug()
         {
-            if (_bugPool == null) return;
-            BugController bug = _bugPool.Get();
+            if (_bugPools == null || _bugPools.Count == 0) return;
+
+            // Round-robin: cycle through all prefab pools so every color gets used
+            var pool = _bugPools[_nextPrefabIndex];
+            _nextPrefabIndex = (_nextPrefabIndex + 1) % _bugPools.Count;
+
+            BugController bug = pool.Get();
 
             int number = -1;
             if (ContainerManager.Instance != null)
@@ -147,7 +163,7 @@ namespace Counting1To100.DragAndDropMode
             if (number == -1) 
             {
                 // If no valid target numbers are left, recycle bug implicitly
-                _bugPool.Release(bug);
+                pool.Release(bug);
                 return;
             }
 
@@ -198,7 +214,13 @@ namespace Counting1To100.DragAndDropMode
 
         private void ReleaseBug(BugController bug) 
         { 
-            _bugPool.Release(bug); 
+            // If _bugPools is ever used improperly before init, safely exist
+            if (_bugPools == null || _bugPools.Count == 0) return;
+            // Find the matching pool and release back to it
+            foreach (var pool in _bugPools)
+            {
+                try { pool.Release(bug); return; } catch { }
+            }
         }
     }
 }

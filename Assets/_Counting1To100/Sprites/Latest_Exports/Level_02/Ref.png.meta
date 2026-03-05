@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 614c063f0fdde86499c2c061d63b6f74
+guid: 721e850ce0c5ae14781ea03d6a83f75c
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -7148951380133763707
-    second: Flower_06_0
+      213: 7176180355887301539
+    second: Ref_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -72,12 +72,12 @@ TextureImporter:
   platformSettings:
   - serializedVersion: 4
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 512
+    maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 1
     compressionQuality: 50
-    crunchedCompression: 1
+    crunchedCompression: 0
     allowsAlphaSplitting: 0
     overridden: 0
     ignorePlatformSupport: 0
@@ -126,13 +126,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Flower_06_0
+      name: Ref_0
       rect:
         serializedVersion: 2
-        x: 180
-        y: 184
-        width: 151
-        height: 145
+        x: 0
+        y: 0
+        width: 1920
+        height: 1080
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -141,8 +141,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 585a696b892d9cc90800000000000000
-      internalID: -7148951380133763707
+      spriteID: 3a38ccc330ae69360800000000000000
+      internalID: 7176180355887301539
       vertices: []
       indices: 
       edges: []
@@ -161,7 +161,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Flower_06_0: -7148951380133763707
+      Ref_0: 7176180355887301539
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

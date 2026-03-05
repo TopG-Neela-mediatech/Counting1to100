@@ -15,6 +15,11 @@ MonoBehaviour:
   LevelMin: 1
   LevelMax: 10
   ContainerPrefab: {fileID: 8258654028019798191, guid: 687ae3d028953ba4b82ceb4d6c71e39b, type: 3}
-  BugPrefab: {fileID: 2748827649162167442, guid: a163f9b267e544a41828b599a72ecc28, type: 3}
+  BugPrefabs:
+  - {fileID: 2748827649162167442, guid: 29b9fb8bea9302741bdb605dca41e720, type: 3}
+  - {fileID: 2748827649162167442, guid: f4c6b45e76d439c4e910625ab186bf1f, type: 3}
+  - {fileID: 2748827649162167442, guid: fd1c223f72d013e4693a4bbda6baea58, type: 3}
+  - {fileID: 2748827649162167442, guid: 21a0a5defa66f2848a7f13f84c0adec3, type: 3}
+  - {fileID: 2748827649162167442, guid: a163f9b267e544a41828b599a72ecc28, type: 3}
   BackgroundSprite: {fileID: 1968486908595393356, guid: 644e133f02c71234f9f0698ce134d54e, type: 3}
   ShowTutorial: 0

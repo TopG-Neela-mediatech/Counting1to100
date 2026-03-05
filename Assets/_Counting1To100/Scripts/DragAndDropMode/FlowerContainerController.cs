@@ -9,6 +9,7 @@ namespace Counting1To100.DragAndDropMode
         [SerializeField] private int _targetNumber;
         [SerializeField] private TextMeshProUGUI _numberText;
         [SerializeField] private Transform _flowerHeadTransform; // Replaces 'DropTarget'
+        [SerializeField] private SpriteRenderer _flowerSR;
         [SerializeField, Range(1f,2f)] private float _pulseFactor;
         public Transform ContainerTransform => _flowerHeadTransform != null ? _flowerHeadTransform : transform;
         public int TargetNumber => _targetNumber;
@@ -128,6 +129,15 @@ namespace Counting1To100.DragAndDropMode
             }
 
             transform.localScale = baseScale;
+        }
+
+
+        public void ChangeSprite(Sprite flowerSprite)
+        {
+            if(flowerSprite != null)
+            {
+                _flowerSR.sprite = flowerSprite;
+            }
         }
     }
 }

@@ -12,7 +12,7 @@ namespace Counting1To100
         
         [Header("Spawn Prefabs")]
         public GameObject ContainerPrefab;
-        public BugController BugPrefab;
+        public System.Collections.Generic.List<BugController> BugPrefabs;
 
         [Header("Visual Assets")]
         public Sprite BackgroundSprite;

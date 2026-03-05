@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 using TMPro;
+using UnityEngine.Rendering;
 
 namespace Counting1To100.DragAndDropMode
 {
@@ -14,7 +15,7 @@ namespace Counting1To100.DragAndDropMode
     public class BugController : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
     {
         [Header("UI")]
-        [SerializeField] private TextMeshProUGUI _numberText;
+        [SerializeField] private TextMeshPro _numberText;
 
         [Header("Upper Wings")]
         [SerializeField] private Transform _upperLeftWing;
@@ -45,13 +46,12 @@ namespace Counting1To100.DragAndDropMode
         [SerializeField] private float _jarMaxX = 0.6f;
         [SerializeField] private float _jarMinY = -0.25f;
         [SerializeField] private float _jarMaxY = 1.25f;
-        [SerializeField] private float _wanderSpeed = 0.5f;
+        [SerializeField] private float _wanderSpeed = 0.15f;
         [SerializeField] private float _wanderChangeInterval = 2f;
         [SerializeField] private float _jumpHeight = 5.0f; // Increased default power
 
         [Header("Visuals")]
         [SerializeField] private System.Collections.Generic.List<BugSpriteData> _bugSprites;
-        [SerializeField] private Canvas _textCanvas;
         [SerializeField] private int _baseSortingOrderBonus = 15; // Above jars
         [SerializeField] private int _dragSortingOrderBonus = 50;
 
@@ -63,7 +63,7 @@ namespace Counting1To100.DragAndDropMode
         private Coroutine _moveCoroutine;
         private Coroutine _wanderCoroutine;
         
-        private int _originalTextSortingOrder;
+        private SortingGroup _sortingGroup;
         private Camera _mainCamera;
         private RectTransform _rectTransform;
         private Canvas _parentCanvas;
@@ -92,19 +92,34 @@ namespace Counting1To100.DragAndDropMode
             if (_leftAntenna) _startRotLA = _leftAntenna.localRotation;
             if (_rightAntenna) _startRotRA = _rightAntenna.localRotation;
 
+            int maxSpriteOrder = 0;
             for (int i = 0; i < _bugSprites.Count; i++)
             {
                 var data = _bugSprites[i];
                 if (data.Renderer != null)
                 {
                     data.OriginalOrder = data.Renderer.sortingOrder;
+                    if (data.OriginalOrder > maxSpriteOrder)
+                    {
+                        maxSpriteOrder = data.OriginalOrder;
+                    }
                     _bugSprites[i] = data;
                 }
             }
 
-            if (_textCanvas != null)
+            // Assign standard TextMeshPro SortingOrder so it sits above Sprites inside the group
+            if (_numberText != null)
             {
-                _originalTextSortingOrder = _textCanvas.sortingOrder;
+                _numberText.sortingLayerID = _bugSprites.Count > 0 && _bugSprites[0].Renderer != null 
+                    ? _bugSprites[0].Renderer.sortingLayerID 
+                    : 0;
+                _numberText.sortingOrder = maxSpriteOrder + 5;
+            }
+
+            _sortingGroup = GetComponent<SortingGroup>();
+            if (_sortingGroup == null) 
+            {
+                _sortingGroup = gameObject.AddComponent<SortingGroup>();
             }
         }
 
@@ -274,6 +289,7 @@ namespace Counting1To100.DragAndDropMode
             float duration = 0.75f;
             float elapsed = 0f;
             Vector3 startP = transform.position;
+            Vector3 startScale = transform.localScale;
             
             // Pick a random direction
             float angle = Random.Range(0f, 360f);
@@ -292,6 +308,7 @@ namespace Counting1To100.DragAndDropMode
                 // Ease in for a 'zoom away' effect
                 float easeInT = t * t * t; 
                 transform.position = Vector3.Lerp(startP, targetP, easeInT);
+                transform.localScale = Vector3.Lerp(startScale, Vector3.zero, easeInT);
                 yield return null;
             }
             
@@ -303,6 +320,8 @@ namespace Counting1To100.DragAndDropMode
         public void BecomeDecoration()
         {
             if (_moveCoroutine != null) StopCoroutine(_moveCoroutine);
+            
+            if (_numberText != null) _numberText.gameObject.SetActive(false);
             
             // Smoothly move to center and scale down after being parented
             _moveCoroutine = StartCoroutine(SmoothCenterRoutine());
@@ -407,13 +426,10 @@ namespace Counting1To100.DragAndDropMode
 
         private void SetSortingOrder(int bonus)
         {
-            foreach (var data in _bugSprites)
+            if (_sortingGroup != null)
             {
-                if (data.Renderer != null) 
-                    data.Renderer.sortingOrder = data.OriginalOrder + bonus;
+                _sortingGroup.sortingOrder = bonus; 
             }
-            if (_textCanvas != null) 
-                _textCanvas.sortingOrder = _originalTextSortingOrder + bonus;
         }
 
         // --- Visual Animation Helpers ---
