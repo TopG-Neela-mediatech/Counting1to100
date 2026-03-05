@@ -6,7 +6,6 @@ namespace Counting1To100.DragAndDropMode
     {
         [Header("Spawning")]
         [SerializeField] private Transform _spawnParent;
-        [SerializeField] private Sprite[] _sprites;
 
         public static ContainerManager Instance { get; private set; }
 
@@ -59,9 +58,12 @@ namespace Counting1To100.DragAndDropMode
                 obj.transform.localScale = Vector3.one;
                 obj.transform.localPosition = Vector3.zero;
 
-                // instead of taking reference of ContainerPrefab as GameObject we can use the type to be FlowerContainerController
+
                 FlowerContainerController container = obj.GetComponent<FlowerContainerController>();
-                container.ChangeSprite(_sprites[Random.Range(0, _sprites.Length - 1)]);
+                if (container != null && levelData.ContainerSprites != null && levelData.ContainerSprites.Length > 0)
+                {
+                    container.ChangeSprite(levelData.ContainerSprites[Random.Range(0, levelData.ContainerSprites.Length)]);
+                }
 
 
                 IDragContainer comp = obj.GetComponent<IDragContainer>();

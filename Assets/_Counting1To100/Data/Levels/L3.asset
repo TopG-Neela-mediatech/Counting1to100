@@ -10,14 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 827366e8da9b92e4aaa9ec1791bdf33b, type: 3}
-  m_Name: L2
+  m_Name: L3
   m_EditorClassIdentifier: 
-  LevelMin: 11
-  LevelMax: 20
-  ContainerPrefab: {fileID: 8258654028019798191, guid: 5258914ac799beb41a136c37ae86505d, type: 3}
+  LevelMin: 21
+  LevelMax: 30
+  ContainerPrefab: {fileID: 8258654028019798191, guid: 360c6b4d0fa61754da0587517b23074a, type: 3}
   BugPrefabs:
-  - {fileID: 2748827649162167442, guid: 9d80ff5eee55b624799476880ab87c83, type: 3}
-  BackgroundSprite: {fileID: -17047998526634394, guid: cf484bcf1917bb545ae3d660d76f9a26, type: 3}
+  - {fileID: 7395163764842596783, guid: 4f71d7328b5b43a499610128ea2d0087, type: 3}
+  BackgroundSprite: {fileID: -6695950386315148514, guid: 7b08f5acaf29fae4d80bf24601750a1a, type: 3}
   ContainerSprites: []
-  BugDropScale: 0.35
-  ShowTutorial: 0
+  BugDropScale: 0.5
+  ShowTutorial: 1

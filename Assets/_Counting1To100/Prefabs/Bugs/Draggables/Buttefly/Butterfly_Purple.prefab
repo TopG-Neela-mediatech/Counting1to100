@@ -187,8 +187,8 @@ MonoBehaviour:
   _antennaTwitchX: 5
   _antennaTwitchY: 5
   _antennaTwitchZ: 10
-  _dropScale: 0.35
   _noiseFrequency: 1
+  _enableWandering: 1
   _jarMinX: -2
   _jarMaxX: 2
   _jarMinY: -3
@@ -205,6 +205,8 @@ MonoBehaviour:
     OriginalOrder: 2
   _baseSortingOrderBonus: 15
   _dragSortingOrderBonus: 50
+  _bubbleSprite: {fileID: 0}
+  _hideNumberOnLand: 1
 --- !u!61 &2545335208450163592
 BoxCollider2D:
   m_ObjectHideFlags: 0

@@ -16,6 +16,8 @@ namespace Counting1To100
 
         [Header("Visual Assets")]
         public Sprite BackgroundSprite;
+        public Sprite[] ContainerSprites;
+        public float BugDropScale = 0.35f;
 
         [Header("Tutorial Settings")]
         public bool ShowTutorial = true;

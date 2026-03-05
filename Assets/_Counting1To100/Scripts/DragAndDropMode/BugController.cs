@@ -38,10 +38,10 @@ namespace Counting1To100.DragAndDropMode
         [SerializeField] private float _antennaTwitchZ = 5f;
 
         [Header("Animation Settings")]
-        [SerializeField] private float _dropScale = 0.35f;
         [SerializeField] private float _noiseFrequency = 1.0f;
 
         [Header("Wandering Settings (Near Flower)")]
+        [SerializeField] private bool _enableWandering = true;
         [SerializeField] private float _jarMinX = -0.6f;
         [SerializeField] private float _jarMaxX = 0.6f;
         [SerializeField] private float _jarMinY = -0.25f;
@@ -54,6 +54,10 @@ namespace Counting1To100.DragAndDropMode
         [SerializeField] private System.Collections.Generic.List<BugSpriteData> _bugSprites;
         [SerializeField] private int _baseSortingOrderBonus = 15; // Above jars
         [SerializeField] private int _dragSortingOrderBonus = 50;
+
+        [Header("Drop Effect")]
+        [SerializeField] private SpriteRenderer _bubbleSprite; // Optional — assign only on Dino Egg prefab
+        [SerializeField] private bool _hideNumberOnLand = true; // Set false on Pearl prefab to keep number visible
 
         public int Number { get; private set; }
         public event System.Action<BugController> OnDespawn;
@@ -157,6 +161,13 @@ namespace Counting1To100.DragAndDropMode
             
             transform.localScale = Vector3.one;
             transform.rotation = Quaternion.identity;
+
+            // Re-enable bubble for pooled respawns
+            if (_bubbleSprite != null)
+            {
+                _bubbleSprite.gameObject.SetActive(true);
+                _bubbleSprite.color = Color.white;
+            }
 
             if (_moveCoroutine != null) StopCoroutine(_moveCoroutine);
             
@@ -321,10 +332,35 @@ namespace Counting1To100.DragAndDropMode
         {
             if (_moveCoroutine != null) StopCoroutine(_moveCoroutine);
             
-            if (_numberText != null) _numberText.gameObject.SetActive(false);
+            if (_hideNumberOnLand && _numberText != null) _numberText.gameObject.SetActive(false);
+
+            // Burst the bubble if present (Level 3 dino eggs)
+            if (_bubbleSprite != null)
+            {
+                StartCoroutine(BubbleBurstRoutine());
+            }
             
             // Smoothly move to center and scale down after being parented
             _moveCoroutine = StartCoroutine(SmoothCenterRoutine());
+        }
+
+        private System.Collections.IEnumerator BubbleBurstRoutine()
+        {
+            float duration = 0.3f;
+            float elapsed = 0f;
+            Vector3 startScale = _bubbleSprite.transform.localScale;
+            Color startColor = _bubbleSprite.color;
+
+            while (elapsed < duration)
+            {
+                elapsed += Time.deltaTime;
+                float t = elapsed / duration;
+                _bubbleSprite.transform.localScale = Vector3.Lerp(startScale, startScale * 1.5f, t);
+                _bubbleSprite.color = new Color(startColor.r, startColor.g, startColor.b, Mathf.Lerp(1f, 0f, t));
+                yield return null;
+            }
+
+            _bubbleSprite.gameObject.SetActive(false);
         }
 
         private System.Collections.IEnumerator SmoothCenterRoutine()
@@ -342,7 +378,9 @@ namespace Counting1To100.DragAndDropMode
                 // 1. Core Lerp for horizontal position and scale
                 // Linear t for position, we will override Y with the jump
                 Vector3 basePos = Vector3.Lerp(startLocal, Vector3.zero, t);
-                float scale = Mathf.Lerp(startScale.x, _dropScale, t);
+                float dropScale = (GameManager.Instance != null && GameManager.Instance.CurrentLevelData != null)
+                    ? GameManager.Instance.CurrentLevelData.BugDropScale : 0.35f;
+                float scale = Mathf.Lerp(startScale.x, dropScale, t);
 
                 // 2. Parabolic Jump Calculation
                 // offset = height * (4 * t * (1 - t)) -> creates an arc that peaks at t=0.5
@@ -354,12 +392,17 @@ namespace Counting1To100.DragAndDropMode
                 yield return null;
             }
 
+            float finalDropScale = (GameManager.Instance != null && GameManager.Instance.CurrentLevelData != null)
+                ? GameManager.Instance.CurrentLevelData.BugDropScale : 0.35f;
             transform.localPosition = Vector3.zero;
-            transform.localScale = Vector3.one * _dropScale;
+            transform.localScale = Vector3.one * finalDropScale;
 
             // Begin revolving/wandering around the newly parented flower head
-            if (_wanderCoroutine != null) StopCoroutine(_wanderCoroutine);
-            _wanderCoroutine = StartCoroutine(FlowerWanderRoutine());
+            if (_enableWandering)
+            {
+                if (_wanderCoroutine != null) StopCoroutine(_wanderCoroutine);
+                _wanderCoroutine = StartCoroutine(FlowerWanderRoutine());
+            }
         }
 
         private System.Collections.IEnumerator FlowerWanderRoutine()
