@@ -8,6 +8,7 @@ namespace Counting1To100.DragAndDropMode
     {
         [Header("Spawning Settings")]
         [SerializeField] private float _spawnInterval = 3f;
+        [SerializeField] private float _initialStartDelay = 1f;
         [SerializeField] private float _bugFlightSpeed = 100f; // Screen units per second crossing
         [SerializeField] private Transform _spawnParent;
         [SerializeField] private Camera _mainCamera;
@@ -110,6 +111,9 @@ namespace Counting1To100.DragAndDropMode
 
         private System.Collections.IEnumerator SpawnRoutine()
         {
+            // Wait before first spawn (lets UI panel exit, containers set up, etc.)
+            yield return new WaitForSeconds(_initialStartDelay);
+
             while (_isSpawning)
             {
                 if (GameManager.Instance != null && GameManager.Instance.IsTutorialActive)
@@ -117,6 +121,9 @@ namespace Counting1To100.DragAndDropMode
                     yield return null;
                     continue;
                 }
+
+                // Spawn first, then wait
+                SpawnBug();
 
                 // Custom wait to allow interruption by tutorial
                 float timer = 0f;
@@ -131,11 +138,6 @@ namespace Counting1To100.DragAndDropMode
                         timer += Time.deltaTime;
                         yield return null;
                     }
-                }
-
-                if (_isSpawning && (GameManager.Instance == null || !GameManager.Instance.IsTutorialActive))
-                {
-                    SpawnBug();
                 }
             }
         }
@@ -168,6 +170,14 @@ namespace Counting1To100.DragAndDropMode
             }
 
             bug.SetNumber(number);
+
+            // Apply random color variant if the level defines any (e.g., dino eggs)
+            var levelData = GameManager.Instance?.CurrentLevelData;
+            if (levelData != null && levelData.BugColorVariants != null && levelData.BugColorVariants.Length > 0)
+            {
+                Sprite variant = levelData.BugColorVariants[Random.Range(0, levelData.BugColorVariants.Length)];
+                bug.SetBodySprite(variant);
+            }
 
             CalculateCrossScreenPath(out Vector3 startPos, out Vector3 endPos);
             

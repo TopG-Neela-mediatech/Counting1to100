@@ -351,6 +351,7 @@ MonoBehaviour:
   _baseSortingOrderBonus: 15
   _dragSortingOrderBonus: 50
   _bubbleSprite: {fileID: 5118923001959774108}
+  _hideNumberOnLand: 1
 --- !u!61 &6530048796668349818
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -454,7 +455,7 @@ GameObject:
   - component: {fileID: 37264876977570302}
   - component: {fileID: 8032092882272667502}
   m_Layer: 0
-  m_Name: Pearl
+  m_Name: Egg
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

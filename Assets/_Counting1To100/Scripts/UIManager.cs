@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -11,6 +12,9 @@ namespace Counting1To100
         [SerializeField] private Button _playButton;
         [SerializeField] private GameObject _startPanel;
         [SerializeField] private GameObject _gamePanel;
+
+        [Header("Tween Settings")]
+        [SerializeField] private float _exitSlideDuration = 0.5f;
 
         private void Start()
         {
@@ -51,8 +55,37 @@ namespace Counting1To100
 
         private void HandleGameStarted()
         {
-            if (_startPanel != null) _startPanel.SetActive(false);
+            if (_startPanel != null && _startPanel.transform.childCount > 0)
+            {
+                RectTransform child = _startPanel.transform.GetChild(0) as RectTransform;
+                if (child != null)
+                {
+                    StartCoroutine(SlideUpRoutine(child));
+                }
+            }
             if (_gamePanel != null) _gamePanel.SetActive(true);
+        }
+
+        private IEnumerator SlideUpRoutine(RectTransform target)
+        {
+            Vector2 startPos = target.anchoredPosition;
+            Vector2 endPos = new Vector2(startPos.x, startPos.y + target.rect.height);
+            float elapsed = 0f;
+
+            while (elapsed < _exitSlideDuration)
+            {
+                elapsed += Time.unscaledDeltaTime;
+                float t = Mathf.Clamp01(elapsed / _exitSlideDuration);
+                // Ease out (decelerate) — starts fast, slows down at end
+                // t = 1f - Mathf.Pow(1f - t, 3f);
+                
+                // Ease in (accelerate) — starts slow, speeds up at end
+                t = Mathf.Pow(t, 3f);
+                target.anchoredPosition = Vector2.Lerp(startPos, endPos, t);
+                yield return null;
+            }
+
+            target.anchoredPosition = endPos;
         }
     }
 }

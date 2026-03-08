@@ -17,7 +17,15 @@ namespace Counting1To100
         [Header("Visual Assets")]
         public Sprite BackgroundSprite;
         public Sprite[] ContainerSprites;
+        public Sprite[] BugColorVariants; // Optional: random color sprites for single-prefab levels (e.g., dino eggs)
         public float BugDropScale = 0.35f;
+
+        [Header("Level Decorations")]
+        public GameObject[] DecorationPrefabs;
+        public float DecorationSpawnInterval = 4f;
+        public int DecorationMaxActive = 5;
+        public float DecorationMoveSpeed = 2f;
+        public bool DecorationHorizontalOnly = true;
 
         [Header("Tutorial Settings")]
         public bool ShowTutorial = true;

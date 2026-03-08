@@ -454,6 +454,18 @@ namespace Counting1To100.DragAndDropMode
             if (_numberText != null) _numberText.text = number.ToString();
         }
 
+        /// <summary>
+        /// Swaps the main body sprite (first in _bugSprites list).
+        /// Used for single-prefab levels with multiple color variants (e.g., dino eggs).
+        /// </summary>
+        public void SetBodySprite(Sprite sprite)
+        {
+            if (sprite != null && _bugSprites.Count > 0 && _bugSprites[0].Renderer != null)
+            {
+                _bugSprites[0].Renderer.sprite = sprite;
+            }
+        }
+
         public void Despawn()
         {
             if (_moveCoroutine != null) StopCoroutine(_moveCoroutine);

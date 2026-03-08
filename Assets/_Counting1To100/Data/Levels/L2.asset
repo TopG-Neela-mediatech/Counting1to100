@@ -19,5 +19,12 @@ MonoBehaviour:
   - {fileID: 2748827649162167442, guid: 9d80ff5eee55b624799476880ab87c83, type: 3}
   BackgroundSprite: {fileID: -17047998526634394, guid: cf484bcf1917bb545ae3d660d76f9a26, type: 3}
   ContainerSprites: []
+  BugColorVariants: []
   BugDropScale: 0.35
+  DecorationPrefabs:
+  - {fileID: 8107383166642864826, guid: a2e26f4ab1c379149989db9cc550c7ee, type: 3}
+  DecorationSpawnInterval: 15
+  DecorationMaxActive: 1
+  DecorationMoveSpeed: 5
+  DecorationHorizontalOnly: 1
   ShowTutorial: 0
