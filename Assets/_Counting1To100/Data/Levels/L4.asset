@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 827366e8da9b92e4aaa9ec1791bdf33b, type: 3}
+  m_Name: L4
+  m_EditorClassIdentifier: 
+  LevelMin: 21
+  LevelMax: 30
+  ContainerPrefab: {fileID: 8258654028019798191, guid: 360c6b4d0fa61754da0587517b23074a, type: 3}
+  BugPrefabs:
+  - {fileID: 7395163764842596783, guid: 4f71d7328b5b43a499610128ea2d0087, type: 3}
+  BackgroundSprite: {fileID: -6695950386315148514, guid: 7b08f5acaf29fae4d80bf24601750a1a, type: 3}
+  ContainerSprites: []
+  BugColorVariants:
+  - {fileID: 3686962169364992275, guid: 141a9693f39dac74584148cc15ae5ef0, type: 3}
+  - {fileID: 6261838875085568562, guid: 6212b09830afb5044bb6ce83461c4b68, type: 3}
+  - {fileID: 1611970466183296693, guid: a2855e667f59ddc4bb8fbb59dae40fcd, type: 3}
+  - {fileID: -2216159162496844675, guid: 9e4fc7abcfee5374f8d1609096810650, type: 3}
+  BugDropScale: 0.5
+  DecorationPrefabs: []
+  DecorationSpawnInterval: 4
+  DecorationMaxActive: 5
+  DecorationMoveSpeed: 2
+  DecorationHorizontalOnly: 1
+  ShowTutorial: 1

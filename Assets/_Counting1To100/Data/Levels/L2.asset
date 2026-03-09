@@ -14,17 +14,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   LevelMin: 11
   LevelMax: 20
-  ContainerPrefab: {fileID: 8258654028019798191, guid: 5258914ac799beb41a136c37ae86505d, type: 3}
+  ContainerPrefab: {fileID: 8547184252337840192, guid: 6aa3304dfd97b3743aaa1c9e932bce75, type: 3}
   BugPrefabs:
-  - {fileID: 2748827649162167442, guid: 9d80ff5eee55b624799476880ab87c83, type: 3}
-  BackgroundSprite: {fileID: -17047998526634394, guid: cf484bcf1917bb545ae3d660d76f9a26, type: 3}
+  - {fileID: 7934533207962869262, guid: 832da2c7d30abd2419347765066593a7, type: 3}
+  BackgroundSprite: {fileID: 1336809692955082325, guid: 2aa2d2b87e050e9459425f31383e584c, type: 3}
   ContainerSprites: []
-  BugColorVariants: []
-  BugDropScale: 0.35
-  DecorationPrefabs:
-  - {fileID: 8107383166642864826, guid: a2e26f4ab1c379149989db9cc550c7ee, type: 3}
-  DecorationSpawnInterval: 15
-  DecorationMaxActive: 1
-  DecorationMoveSpeed: 5
+  BugColorVariants:
+  - {fileID: 6261838875085568562, guid: c5a9142cd1993b84ebfdc8204b541069, type: 3}
+  - {fileID: 1611970466183296693, guid: 866b668dc9323504990f99a9a1b1e25b, type: 3}
+  - {fileID: -2216159162496844675, guid: 1631be0f57b09704da506940d7d504d2, type: 3}
+  - {fileID: -8947952894515898720, guid: 68669afe53aa4a042b0200257dc84b1b, type: 3}
+  - {fileID: 581927207526996229, guid: b1f2e3fec7c3ce54fbe7e9619aa8a702, type: 3}
+  - {fileID: 642146194206879159, guid: 246255f7f174da542ac751e0e88da7c3, type: 3}
+  BugDropScale: 0.5
+  DecorationPrefabs: []
+  DecorationSpawnInterval: 4
+  DecorationMaxActive: 5
+  DecorationMoveSpeed: 2
   DecorationHorizontalOnly: 1
   ShowTutorial: 0

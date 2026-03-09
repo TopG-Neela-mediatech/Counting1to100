@@ -50,6 +50,14 @@ namespace Counting1To100.DragAndDropMode
         [SerializeField] private float _wanderChangeInterval = 2f;
         [SerializeField] private float _jumpHeight = 5.0f; // Increased default power
 
+        [Header("Bobbing Settings (Static Hover)")]
+        [SerializeField] private bool _enableBobbing = false;
+        [SerializeField] private float _bobMinY = -0.2f;
+        [SerializeField] private float _bobMaxY = 0.2f;
+        [SerializeField] private float _bobMinScaleOffset = -0.05f;
+        [SerializeField] private float _bobMaxScaleOffset = 0.05f;
+        [SerializeField] private float _bobSpeed = 2f;
+
         [Header("Visuals")]
         [SerializeField] private System.Collections.Generic.List<BugSpriteData> _bugSprites;
         [SerializeField] private int _baseSortingOrderBonus = 15; // Above jars
@@ -81,6 +89,9 @@ namespace Counting1To100.DragAndDropMode
         private float _flightElapsed;
         private Vector3 _flightStartPosition;
         private Vector3 _dragStartPosition;
+
+        // Visual states
+        private float _originalBubbleAlpha = 1f;
 
         private void Awake()
         {
@@ -125,6 +136,11 @@ namespace Counting1To100.DragAndDropMode
             {
                 _sortingGroup = gameObject.AddComponent<SortingGroup>();
             }
+
+            if (_bubbleSprite != null)
+            {
+                _originalBubbleAlpha = _bubbleSprite.color.a;
+            }
         }
 
         private void OnEnable()
@@ -166,7 +182,10 @@ namespace Counting1To100.DragAndDropMode
             if (_bubbleSprite != null)
             {
                 _bubbleSprite.gameObject.SetActive(true);
-                _bubbleSprite.color = Color.white;
+                // Reset alpha to whatever it was strictly in the prefab
+                Color c = _bubbleSprite.color;
+                c.a = _originalBubbleAlpha;
+                _bubbleSprite.color = c;
             }
 
             if (_moveCoroutine != null) StopCoroutine(_moveCoroutine);
@@ -356,7 +375,12 @@ namespace Counting1To100.DragAndDropMode
                 elapsed += Time.deltaTime;
                 float t = elapsed / duration;
                 _bubbleSprite.transform.localScale = Vector3.Lerp(startScale, startScale * 1.5f, t);
-                _bubbleSprite.color = new Color(startColor.r, startColor.g, startColor.b, Mathf.Lerp(1f, 0f, t));
+                
+                // Fade from original alpha down to 0
+                Color c = startColor;
+                c.a = Mathf.Lerp(_originalBubbleAlpha, 0f, t);
+                _bubbleSprite.color = c;
+                
                 yield return null;
             }
 
@@ -402,6 +426,33 @@ namespace Counting1To100.DragAndDropMode
             {
                 if (_wanderCoroutine != null) StopCoroutine(_wanderCoroutine);
                 _wanderCoroutine = StartCoroutine(FlowerWanderRoutine());
+            }
+            else if (_enableBobbing)
+            {
+                if (_wanderCoroutine != null) StopCoroutine(_wanderCoroutine); // we reuse the var
+                _wanderCoroutine = StartCoroutine(FlowerBobRoutine(finalDropScale));
+            }
+        }
+
+        private System.Collections.IEnumerator FlowerBobRoutine(float baseScale)
+        {
+            float noiseSeed = Random.Range(0f, 100f);
+
+            while (true)
+            {
+                // Sine wave oscillates between -1 and 1
+                float sinTime = Mathf.Sin(Time.time * _bobSpeed + noiseSeed);
+                
+                // Remap sinTime (-1 to 1) into (0 to 1) for Lerping
+                float t = (sinTime + 1f) / 2f;
+
+                float currentY = Mathf.Lerp(_bobMinY, _bobMaxY, t);
+                float currentScaleOffset = Mathf.Lerp(_bobMinScaleOffset, _bobMaxScaleOffset, t);
+
+                transform.localPosition = new Vector3(0, currentY, 0);
+                transform.localScale = Vector3.one * (baseScale + currentScaleOffset);
+
+                yield return null;
             }
         }
 
@@ -462,7 +513,10 @@ namespace Counting1To100.DragAndDropMode
         {
             if (sprite != null && _bugSprites.Count > 0 && _bugSprites[0].Renderer != null)
             {
-                _bugSprites[0].Renderer.sprite = sprite;
+                var renderer = _bugSprites[0].Renderer;
+                Color originalColor = renderer.color; // Capture the prefab's color/alpha
+                renderer.sprite = sprite;
+                renderer.color = originalColor; // Re-apply to ensure alpha isn't lost
             }
         }
 
