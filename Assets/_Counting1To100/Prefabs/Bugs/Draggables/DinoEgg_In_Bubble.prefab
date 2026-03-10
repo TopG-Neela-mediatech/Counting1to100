@@ -343,6 +343,12 @@ MonoBehaviour:
   _wanderSpeed: 0.15
   _wanderChangeInterval: 2
   _jumpHeight: 5
+  _enableBobbing: 0
+  _bobMinY: -0.2
+  _bobMaxY: 0.2
+  _bobMinScaleOffset: -0.05
+  _bobMaxScaleOffset: 0.05
+  _bobSpeed: 2
   _bugSprites:
   - Renderer: {fileID: 8032092882272667502}
     OriginalOrder: 1

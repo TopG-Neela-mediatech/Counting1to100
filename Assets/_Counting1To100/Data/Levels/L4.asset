@@ -12,22 +12,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 827366e8da9b92e4aaa9ec1791bdf33b, type: 3}
   m_Name: L4
   m_EditorClassIdentifier: 
-  LevelMin: 21
-  LevelMax: 30
-  ContainerPrefab: {fileID: 8258654028019798191, guid: 360c6b4d0fa61754da0587517b23074a, type: 3}
+  LevelMin: 31
+  LevelMax: 40
+  ContainerPrefab: {fileID: 8258654028019798191, guid: 0c0ab25417df04d4c832c60212d8bf6c, type: 3}
   BugPrefabs:
-  - {fileID: 7395163764842596783, guid: 4f71d7328b5b43a499610128ea2d0087, type: 3}
-  BackgroundSprite: {fileID: -6695950386315148514, guid: 7b08f5acaf29fae4d80bf24601750a1a, type: 3}
+  - {fileID: 2748827649162167442, guid: 84b31758bca3d06449cba4bbc81585c8, type: 3}
+  BackgroundSprite: {fileID: -2923306450325161345, guid: 42e56ebfb6326c34fbc252e2c8e7dab7, type: 3}
   ContainerSprites: []
   BugColorVariants:
-  - {fileID: 3686962169364992275, guid: 141a9693f39dac74584148cc15ae5ef0, type: 3}
-  - {fileID: 6261838875085568562, guid: 6212b09830afb5044bb6ce83461c4b68, type: 3}
-  - {fileID: 1611970466183296693, guid: a2855e667f59ddc4bb8fbb59dae40fcd, type: 3}
-  - {fileID: -2216159162496844675, guid: 9e4fc7abcfee5374f8d1609096810650, type: 3}
+  - {fileID: 21300000, guid: 7986dc1fdbae15c48b85d4310e39ce17, type: 3}
+  - {fileID: 21300000, guid: 6e5b52406a535b746b73919e9be90d56, type: 3}
+  - {fileID: 21300000, guid: d335925a55a24c04fb9d78153a9a2fed, type: 3}
+  - {fileID: 21300000, guid: 9e8b3bbc71373354bb29f6884b0c6615, type: 3}
+  - {fileID: 21300000, guid: 7ed7d6d29b2a6c246b5eed3dbf5eaec8, type: 3}
+  - {fileID: 21300000, guid: 55d95182af9457a44a2938019f77d820, type: 3}
   BugDropScale: 0.5
   DecorationPrefabs: []
-  DecorationSpawnInterval: 4
-  DecorationMaxActive: 5
-  DecorationMoveSpeed: 2
+  DecorationSpawnInterval: 15
+  DecorationMaxActive: 1
+  DecorationMoveSpeed: 5
   DecorationHorizontalOnly: 1
-  ShowTutorial: 1
+  ShowTutorial: 0

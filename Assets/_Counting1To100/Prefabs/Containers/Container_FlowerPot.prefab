@@ -636,9 +636,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _targetNumber: 0
   _numberText: {fileID: 6353938290314013454}
+  _numberTextCanvas: {fileID: 8925867370870535203}
   _flowerHeadTransform: {fileID: 8111843639977312130}
   _flowerSR: {fileID: 4176430759314591715}
   _pulseFactor: 1.5
+  _containerBurstEffect: {fileID: 0}
+  _swappedSpriteOnDrop: {fileID: 0}
+  _hideBugOnDrop: 0
 --- !u!1 &8369315851905817176
 GameObject:
   m_ObjectHideFlags: 0

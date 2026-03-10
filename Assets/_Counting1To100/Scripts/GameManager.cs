@@ -1,6 +1,5 @@
 using System;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using System.Collections;
 
 namespace Counting1To100
@@ -10,7 +9,7 @@ namespace Counting1To100
         [Header("Level Configurations")]
         [SerializeField] private System.Collections.Generic.List<LevelData> _levels;
         
-        private int _currentLevelIndex = 0;
+        [SerializeField, Range(0,10)] private int _currentLevelIndex = 0;
         public LevelData CurrentLevelData => 
             (_levels != null && _currentLevelIndex >= 0 && _currentLevelIndex < _levels.Count) ? _levels[_currentLevelIndex] : null;
 
@@ -48,7 +47,7 @@ namespace Counting1To100
         public void StartGame()
         {
             Debug.Log("[GameManager] Game Started");
-            _currentLevelIndex = 0;
+            //_currentLevelIndex = 0;
             _matchesNeeded = 10; // This could also be logic based like (CurrentLevelMax - CurrentLevelMin + 1)
             _currentMatches = 0;
             

@@ -28,5 +28,11 @@ MonoBehaviour:
   - {fileID: -6130858109502338324, guid: c2ff5f78018742a45af4484a6c7273bf, type: 3}
   - {fileID: 972751094128395581, guid: f13d742ee2bf77a47bc4bbb2bafcaa0c, type: 3}
   - {fileID: 3726492735533560200, guid: be56681d113e38142a569f03efcdde22, type: 3}
+  BugColorVariants: []
   BugDropScale: 0.35
-  ShowTutorial: 0
+  DecorationPrefabs: []
+  DecorationSpawnInterval: 4
+  DecorationMaxActive: 5
+  DecorationMoveSpeed: 2
+  DecorationHorizontalOnly: 1
+  ShowTutorial: 1
