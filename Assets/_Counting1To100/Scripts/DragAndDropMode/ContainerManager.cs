@@ -6,6 +6,7 @@ namespace Counting1To100.DragAndDropMode
     {
         [Header("Spawning")]
         [SerializeField] private Transform _spawnParent;
+        [SerializeField] private RectTransform _containerGroupRect;
 
         public static ContainerManager Instance { get; private set; }
 
@@ -38,6 +39,14 @@ namespace Counting1To100.DragAndDropMode
             if (GameManager.Instance == null || GameManager.Instance.CurrentLevelData == null) return;
 
             var levelData = GameManager.Instance.CurrentLevelData;
+
+            // Apply level-specific Y offset
+            if (_containerGroupRect != null)
+            {
+                Vector2 anchoredPos = _containerGroupRect.anchoredPosition;
+                anchoredPos.y = levelData.ContainerYOffset;
+                _containerGroupRect.anchoredPosition = anchoredPos;
+            }
 
             // Clear existing
             foreach (var container in _containers)

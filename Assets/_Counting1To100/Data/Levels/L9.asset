@@ -1,0 +1,42 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 827366e8da9b92e4aaa9ec1791bdf33b, type: 3}
+  m_Name: L9
+  m_EditorClassIdentifier: 
+  LevelMin: 81
+  LevelMax: 90
+  ContainerPrefab: {fileID: 4466453086465732510, guid: c96d368d0c89eb44981f7e09bf44077c, type: 3}
+  BugPrefabs:
+  - {fileID: 6493814627006200390, guid: 21192a582f764c04ca4f32c3650659e9, type: 3}
+  BackgroundSprite: {fileID: 8457884374351448055, guid: dbb74caf635e2d841abaac06a548617c, type: 3}
+  SecondaryBackgroundSprite: {fileID: 0}
+  ContainerSprites: []
+  BugColorVariants:
+  - {fileID: 3686962169364992275, guid: aa1f0d7a76d74334b8ca2e9e15abeaf0, type: 3}
+  - {fileID: 6261838875085568562, guid: 196ea1b75728e7c448a3e7b11123f34b, type: 3}
+  - {fileID: 1611970466183296693, guid: 5cd98ea0b060a8241a7fb13de7f03275, type: 3}
+  - {fileID: -2216159162496844675, guid: e0a446521c3e0864abfe503b494bf0d5, type: 3}
+  - {fileID: -8947952894515898720, guid: deb58cfb3f7272540be774010ab67fab, type: 3}
+  - {fileID: 581927207526996229, guid: f8aecc075f0a7654e968a8824bc7c323, type: 3}
+  - {fileID: 642146194206879159, guid: cdb135a93b26a9042925a839afda6986, type: 3}
+  - {fileID: -3394920065024653024, guid: 0682dd80289820d4c8f31a3e8600d78f, type: 3}
+  - {fileID: -489288472147288824, guid: 9b0b8a104baa74c47b8d2774a9432bb6, type: 3}
+  - {fileID: 7255797471816181890, guid: 242ddd266833a6f43a0301a325800c2e, type: 3}
+  - {fileID: -8881488233920462768, guid: 5882a4307ff39f74396e685cee17c31d, type: 3}
+  BugDropScale: 0.35
+  ContainerYOffset: 0
+  DecorationPrefabs: []
+  DecorationSpawnInterval: 4
+  DecorationMaxActive: 5
+  DecorationMoveSpeed: 2
+  DecorationHorizontalOnly: 1
+  ShowTutorial: 0

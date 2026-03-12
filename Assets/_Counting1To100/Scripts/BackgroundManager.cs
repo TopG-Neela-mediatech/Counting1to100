@@ -9,6 +9,10 @@ namespace Counting1To100
         [SerializeField] private Image _backgroundImage;
         [SerializeField] private SpriteRenderer _backgroundSpriteRenderer;
 
+        [Header("Final Level Settings")]
+        [SerializeField] private Image _secondaryBG;
+        [SerializeField] private SpriteRenderer _secondarySpriteRenderer;
+
         private void OnEnable()
         {
             GameManager.OnGameStarted += UpdateBackground;
@@ -22,7 +26,23 @@ namespace Counting1To100
         private void UpdateBackground()
         {
             if (GameManager.Instance == null || GameManager.Instance.CurrentLevelData == null) return;
-            
+
+            // Handle secondary BG activation
+            Sprite secondaryBG = GameManager.Instance.CurrentLevelData.SecondaryBackgroundSprite;
+            bool hasSecondary = secondaryBG != null;
+
+            if (_secondaryBG != null)
+            {
+                _secondaryBG.gameObject.SetActive(hasSecondary);
+                if (hasSecondary) _secondaryBG.sprite = secondaryBG;
+            }
+
+            if (_secondarySpriteRenderer != null)
+            {
+                _secondarySpriteRenderer.gameObject.SetActive(hasSecondary);
+                if (hasSecondary) _secondarySpriteRenderer.sprite = secondaryBG;
+            }
+
             Sprite bgSprite = GameManager.Instance.CurrentLevelData.BackgroundSprite;
             if (bgSprite != null)
             {
@@ -30,7 +50,7 @@ namespace Counting1To100
                 {
                     _backgroundImage.sprite = bgSprite;
                 }
-                
+
                 if (_backgroundSpriteRenderer != null)
                 {
                     _backgroundSpriteRenderer.sprite = bgSprite;

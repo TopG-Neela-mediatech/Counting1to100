@@ -10,6 +10,7 @@ namespace Counting1To100
         [SerializeField] private System.Collections.Generic.List<LevelData> _levels;
         
         [SerializeField, Range(0,10)] private int _currentLevelIndex = 0;
+        public int CurrentLevelIndex => _currentLevelIndex;
         public LevelData CurrentLevelData => 
             (_levels != null && _currentLevelIndex >= 0 && _currentLevelIndex < _levels.Count) ? _levels[_currentLevelIndex] : null;
 

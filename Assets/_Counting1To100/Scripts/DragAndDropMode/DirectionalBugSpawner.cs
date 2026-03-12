@@ -23,8 +23,17 @@ namespace Counting1To100.DragAndDropMode
         private System.Collections.Generic.List<ObjectPool<BugController>> _bugPools;
         private int _nextPrefabIndex = 0; // Round-robin index
 
+        // Active bugs tracking for tutorial
+        private System.Collections.Generic.List<BugController> _activeBugs = new System.Collections.Generic.List<BugController>();
+        public System.Collections.Generic.IReadOnlyList<BugController> ActiveBugs => _activeBugs;
+
+        public static DirectionalBugSpawner Instance { get; private set; }
+
         private void Awake()
         {
+            if (Instance == null) Instance = this;
+            else Destroy(gameObject);
+
             if (_mainCamera == null) _mainCamera = Camera.main;
             
             // Calculate world-space bounds from camera
@@ -72,6 +81,7 @@ namespace Counting1To100.DragAndDropMode
                     if (b != null) Destroy(b.gameObject);
                 }
             }
+            _activeBugs.Clear();
 
             var levelData = GameManager.Instance?.CurrentLevelData;
             if (levelData != null && levelData.BugPrefabs != null && levelData.BugPrefabs.Count > 0)
@@ -83,8 +93,8 @@ namespace Counting1To100.DragAndDropMode
                     var capturedPrefab = prefab; // capture for closure
                     _bugPools.Add(new ObjectPool<BugController>(
                         createFunc: () => Instantiate(capturedPrefab, transform),
-                        actionOnGet: (bug) => { bug.gameObject.SetActive(true); bug.OnDespawn += ReleaseBug; },
-                        actionOnRelease: (bug) => { bug.OnDespawn -= ReleaseBug; bug.gameObject.SetActive(false); },
+                        actionOnGet: (bug) => { bug.gameObject.SetActive(true); _activeBugs.Add(bug); bug.OnDespawn += ReleaseBug; },
+                        actionOnRelease: (bug) => { bug.OnDespawn -= ReleaseBug; _activeBugs.Remove(bug); bug.gameObject.SetActive(false); },
                         actionOnDestroy: (bug) => Destroy(bug.gameObject),
                         collectionCheck: true,
                         defaultCapacity: 10,

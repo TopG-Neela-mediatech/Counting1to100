@@ -1,6 +1,6 @@
 using UnityEngine;
-using UnityEngine.UI;
 using System.Collections;
+using System.Collections.Generic;
 using Counting1To100.DragAndDropMode;
 
 namespace Counting1To100
@@ -10,130 +10,302 @@ namespace Counting1To100
         [Header("UI Elements")]
         [SerializeField] private GameObject _darkOverlay;
         [SerializeField] private Transform _handPointer;
-        [SerializeField] private Transform _tutorialElementsParent; // Parent for dummy bug and hand to sit above overlay
 
         [Header("Settings")]
         [SerializeField] private float _animationDuration = 2f;
-        [SerializeField] private float _tutorialWaitStart = 0.5f;
-        [SerializeField] private int _loops = 2; // How many times to show the drag animation
+        [SerializeField] private float _idleWaitTime = 5f;
+        [SerializeField] private float _initialTutorialDelay = 1.5f;
+        [SerializeField] private int _highlightSortingOrder = 1000;
         
-        private Coroutine _tutorialCoroutine;
-        private BugController _dummyBug;
+        private Coroutine _handAnimCoroutine;
+        private BugController _highlightedBug;
+        private FlowerContainerController _highlightedContainer;
+        
+        private bool _isTutorialDone = false;
+        private bool _isShowingHint = false;
+        private bool _isIdleHint = false;
+        private float _timeSinceLastInteraction = 0f;
+
+        private void Awake()
+        {
+            if (_darkOverlay != null) _darkOverlay.SetActive(false);
+            if (_handPointer != null) _handPointer.gameObject.SetActive(false);
+        }
 
         private void OnEnable()
         {
             GameManager.OnGameStarted += HandleGameStarted;
+            GameManager.OnNextLevel += HandleNextLevel;
         }
 
         private void OnDisable()
         {
             GameManager.OnGameStarted -= HandleGameStarted;
+            GameManager.OnNextLevel -= HandleNextLevel;
         }
 
         private void HandleGameStarted()
         {
+            _isTutorialDone = false;
+            _timeSinceLastInteraction = 0f;
+
             var levelData = GameManager.Instance.CurrentLevelData;
             if (levelData != null && levelData.ShowTutorial)
             {
-                if (_tutorialCoroutine != null) StopCoroutine(_tutorialCoroutine);
-                _tutorialCoroutine = StartCoroutine(TutorialRoutine());
+                StartCoroutine(InitialTutorialRoutine());
+            }
+            else
+            {
+                // If this level doesn't need the initial tutorial, mark it done to allow idle hints to begin
+                _isTutorialDone = true;
             }
         }
 
-        private IEnumerator TutorialRoutine()
+        private void HandleNextLevel()
         {
-            // 1. Pause game logic
-            GameManager.Instance.StartTutorial();
+            // Reset for next level
+            EndCurrentHint();
+            _isTutorialDone = false;
+            _timeSinceLastInteraction = 0f;
+        }
 
-            // 2. Setup visual overlay
-            if (_darkOverlay != null) _darkOverlay.SetActive(true);
-            if (_handPointer != null) _handPointer.gameObject.SetActive(false);
-
-            yield return new WaitForSecondsRealtime(_tutorialWaitStart);
-
-            // 3. Identify targets
-            var availableNumbers = ContainerManager.Instance.GetAvailableTargetNumbers();
-            if (availableNumbers.Count == 0)
+        private void Update()
+        {
+            // Reset idle timer on any screen touch/click
+            if (Input.GetMouseButtonDown(0) || Input.touchCount > 0)
             {
-                EndTutorial();
-                yield break;
-            }
-
-            int targetNumber = availableNumbers[0];
-            IDragContainer targetContainer = ContainerManager.Instance.GetContainerByNumber(targetNumber);
-            if (targetContainer == null)
-            {
-                EndTutorial();
-                yield break;
-            }
-
-            // Highlight Container (could use sorting layer boost, but let's assume overlay ignores it or we boost it)
-            // If target container is a canvas element, we need a Canvas override. If it's a sprite, we need a SortingGroup. 
-            // For now, depending on the project structure, it might naturally sit behind the overlay if overlay is high sorting order. 
-            // The absolute best way to fake it is drawing another canvas or sorting group, but moving it is risky. 
-            // Let's assume the user handles highlighting via Canvas Sorting overrides manually, or we just put the dummy bug over it.
-
-            // 4. Instantiate Dummy Bug for Tutorial
-            var levelData = GameManager.Instance.CurrentLevelData;
-            Vector3 bugStartPos = Camera.main != null ? Camera.main.ViewportToWorldPoint(new Vector3(0.5f, 0.2f, 10f)) : new Vector3(0, -3f, 0);
-            bugStartPos.z = 0;
-
-            BugController tutorialPrefab = (levelData.BugPrefabs != null && levelData.BugPrefabs.Count > 0) ? levelData.BugPrefabs[0] : null;
-            if (tutorialPrefab != null)
-            {
-                _dummyBug = Instantiate(tutorialPrefab, _tutorialElementsParent != null ? _tutorialElementsParent : transform);
-            }
-            if (_dummyBug != null)
-            {
-                _dummyBug.transform.position = bugStartPos;
-                _dummyBug.SetNumber(targetNumber);
-
-                // "Disable" normal flight logic by flying it to its own exact position instantly
-                _dummyBug.InitializeFlight(bugStartPos, 100f, Camera.main);
-
-                // 5. Play Drag Animation loops
-                if (_handPointer != null)
+                _timeSinceLastInteraction = 0f;
+                
+                // Only instantly kill the hint if it was an IDLE hint. 
+                // The main tutorial hint requires successfully completing the drag to exit.
+                if (_isShowingHint && _isIdleHint)
                 {
-                    _handPointer.gameObject.SetActive(true);
+                    EndCurrentHint();
+                }
+            }
 
-                    for (int i = 0; i < _loops; i++)
+            // Only run idle tracking if the initial tutorial is completely finished
+            if (!_isTutorialDone || GameManager.Instance == null || GameManager.Instance.IsTutorialActive) return;
+
+            // Increment idle timer and check threshold
+            if (!_isShowingHint)
+            {
+                _timeSinceLastInteraction += Time.unscaledDeltaTime;
+                if (_timeSinceLastInteraction >= _idleWaitTime)
+                {
+                    TriggerIdleHint();
+                }
+            }
+        }
+
+        private IEnumerator InitialTutorialRoutine()
+        {
+            // Wait for bugs to actually spawn
+            BugController validBug = null;
+            while (validBug == null)
+            {
+                yield return new WaitForSeconds(0.5f);
+                validBug = FindValidBug();
+            }
+
+            // Wait a little bit extra so the bug flies towards the center of the screen
+            yield return new WaitForSeconds(_initialTutorialDelay);
+
+            // Fetch the bug again just in case it was caught/despawned during the delay
+            if (validBug == null || !validBug.gameObject.activeInHierarchy || validBug.Number <= 0)
+            {
+                validBug = FindValidBug();
+            }
+
+            if (validBug != null)
+            {
+                // A valid bug is on screen and well within view! Start the main tutorial.
+                _isIdleHint = false;
+                ShowHint(validBug, true);
+            }
+            else
+            {
+                // Edge case: if bugs vanished, retry the routine
+                StartCoroutine(InitialTutorialRoutine());
+            }
+        }
+
+        private void TriggerIdleHint()
+        {
+            BugController validBug = FindValidBug();
+            if (validBug != null)
+            {
+                _isIdleHint = true;
+                ShowHint(validBug, false);
+            }
+        }
+
+        private BugController FindValidBug()
+        {
+            if (DirectionalBugSpawner.Instance == null || DirectionalBugSpawner.Instance.ActiveBugs.Count == 0) return null;
+
+            var activeBugs = DirectionalBugSpawner.Instance.ActiveBugs;
+            int count = activeBugs.Count;
+            int startIndex = Random.Range(0, count);
+
+            for (int i = 0; i < count; i++)
+            {
+                int index = (startIndex + i) % count;
+                BugController bug = activeBugs[index];
+
+                if (bug != null && bug.gameObject.activeInHierarchy && bug.Number > 0)
+                {
+                    IDragContainer container = ContainerManager.Instance.GetContainerByNumber(bug.Number);
+                    if (container != null && !container.IsCompleted)
                     {
-                        _handPointer.position = bugStartPos;
-                        float elapsed = 0f;
+                        return bug; // Found a valid pair
+                    }
+                }
+            }
+            return null;
+        }
 
-                        Vector3 targetPos = targetContainer.ContainerTransform.position;
+        private void ShowHint(BugController bug, bool isInitialTutorial)
+        {
+            if (_isShowingHint) return;
+            _isShowingHint = true;
 
-                        while (elapsed < _animationDuration)
-                        {
-                            elapsed += Time.unscaledDeltaTime; // Unscaled in case timeScale = 0 is used elsewhere
-                            float t = elapsed / _animationDuration;
+            _highlightedBug = bug;
+            _highlightedContainer = ContainerManager.Instance.GetContainerByNumber(bug.Number) as FlowerContainerController;
 
-                            // simple ease out
-                            t = Mathf.Sin(t * Mathf.PI * 0.5f);
+            if (_highlightedContainer == null)
+            {
+                EndCurrentHint();
+                return;
+            }
 
-                            _handPointer.position = Vector3.Lerp(bugStartPos, targetPos, t);
-                            yield return null;
-                        }
+            // Always pause and show overlay now, as per user request for unified tutorial experience
+            GameManager.Instance.StartTutorial();
+            if (_darkOverlay != null) _darkOverlay.SetActive(true);
 
-                        yield return new WaitForSecondsRealtime(0.5f);
+            // Boost Sorting
+            _highlightedBug.HighlightForTutorial(_highlightSortingOrder);
+            _highlightedContainer.HighlightForTutorial(_highlightSortingOrder - 1); // slightly behind bug
+
+            // Subscribe to the success event so we know to end the tutorial!
+            _highlightedBug.OnSuccessfulDrop += HandleSuccessfulDrop;
+            _highlightedBug.OnDragStarted += HandleDragStarted;
+            _highlightedBug.OnDragEnded += HandleDragEnded;
+
+            if (_handPointer != null)
+            {
+                var handCanvas = _handPointer.GetComponent<Canvas>();
+                if (handCanvas != null)
+                {
+                    handCanvas.sortingOrder = _highlightSortingOrder + 1;
+                }
+                
+                _handPointer.gameObject.SetActive(true);
+            }
+
+            if (_handAnimCoroutine != null) StopCoroutine(_handAnimCoroutine);
+            _handAnimCoroutine = StartCoroutine(AnimateHandRoutine());
+        }
+
+        private void HandleSuccessfulDrop(BugController bug)
+        {
+            if (bug == _highlightedBug)
+            {
+                // The user successfully dropped the tutorial bug!
+                if (!_isIdleHint)
+                {
+                    _isTutorialDone = true;
+                }
+                EndCurrentHint();
+            }
+        }
+
+        private void HandleDragStarted(BugController bug)
+        {
+            if (_handAnimCoroutine != null) StopCoroutine(_handAnimCoroutine);
+            if (_handPointer != null) _handPointer.gameObject.SetActive(false);
+        }
+
+        private void HandleDragEnded(BugController bug)
+        {
+            // Only restart if the hint is still active
+            if (_isShowingHint && _highlightedBug != null && _highlightedContainer != null)
+            {
+                if (_handPointer != null) _handPointer.gameObject.SetActive(true);
+                if (_handAnimCoroutine != null) StopCoroutine(_handAnimCoroutine);
+                _handAnimCoroutine = StartCoroutine(AnimateHandRoutine());
+            }
+        }
+
+        private IEnumerator AnimateHandRoutine()
+        {
+            while (_isShowingHint && _highlightedBug != null && _highlightedContainer != null)
+            {
+                float elapsed = 0f;
+
+                while (elapsed < _animationDuration && _isShowingHint)
+                {
+                    if (_highlightedBug == null || _highlightedBug.gameObject == null || 
+                        _highlightedContainer == null || _highlightedContainer.gameObject == null ||
+                        _handPointer == null || _handPointer.gameObject == null) 
+                    {
+                        break;
                     }
 
-                    _handPointer.gameObject.SetActive(false);
+                    Vector3 bugWorldPos = _highlightedBug.transform.position;
+                    Vector3 containerWorldPos = _highlightedContainer.ContainerTransform.position;
+
+                    // Ensure Z is visible to camera
+                    bugWorldPos.z = _handPointer.position.z;
+                    containerWorldPos.z = _handPointer.position.z;
+
+                    elapsed += Time.unscaledDeltaTime;
+                    float t = elapsed / _animationDuration;
+                    t = Mathf.Sin(t * Mathf.PI * 0.5f); // Sine ease
+
+                    // Simple, robust world space lerp.
+                    // This requires _handPointer to be either a SpriteRenderer or standard Transform,
+                    // or a RectTransform within a World Space Canvas.
+                    _handPointer.position = Vector3.Lerp(bugWorldPos, containerWorldPos, t);
+                    
+                    yield return null;
                 }
 
-                // 6. Cleanup & Unpause
-                EndTutorial();
+                if (_isShowingHint)
+                {
+                    // Brief pause before repeating the hand animation
+                    yield return new WaitForSecondsRealtime(0.5f);
+                }
             }
+
+            if (_isShowingHint) EndCurrentHint();
         }
 
-        private void EndTutorial()
+        private void EndCurrentHint()
         {
+            if (!_isShowingHint) return;
+
+            _isShowingHint = false;
+            _timeSinceLastInteraction = 0f;
+
+            if (_handAnimCoroutine != null) StopCoroutine(_handAnimCoroutine);
+
             if (_darkOverlay != null) _darkOverlay.SetActive(false);
             if (_handPointer != null) _handPointer.gameObject.SetActive(false);
-            
-            if (_dummyBug != null)
+
+            if (_highlightedBug != null)
             {
-                Destroy(_dummyBug.gameObject);
+                _highlightedBug.ClearHighlight();
+                _highlightedBug.OnSuccessfulDrop -= HandleSuccessfulDrop;
+                _highlightedBug.OnDragStarted -= HandleDragStarted;
+                _highlightedBug.OnDragEnded -= HandleDragEnded;
+                _highlightedBug = null;
+            }
+
+            if (_highlightedContainer != null)
+            {
+                _highlightedContainer.ClearHighlight();
+                _highlightedContainer = null;
             }
 
             if (GameManager.Instance != null && GameManager.Instance.IsTutorialActive)

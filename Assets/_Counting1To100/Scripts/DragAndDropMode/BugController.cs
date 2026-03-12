@@ -66,10 +66,17 @@ namespace Counting1To100.DragAndDropMode
         [Header("Drop Effect")]
         [SerializeField] private SpriteRenderer _bubbleSprite; // Optional — assign only on Dino Egg prefab
         [SerializeField] private bool _hideNumberOnLand = true; // Set false on Pearl prefab to keep number visible
+        [SerializeField] private bool _hideBugOnLand = false;
+        public bool HideNumberOnLand => _hideNumberOnLand;
 
         public int Number { get; private set; }
+        // --- Events ---
         public event System.Action<BugController> OnDespawn;
+        public event System.Action<BugController> OnSuccessfulDrop;
+        public event System.Action<BugController> OnDragStarted;
+        public event System.Action<BugController> OnDragEnded;
 
+        // --- Core Movement Components ---
         private bool _isDropped = false;
         private Rigidbody2D _rb;
         private Coroutine _moveCoroutine;
@@ -92,11 +99,13 @@ namespace Counting1To100.DragAndDropMode
 
         // Visual states
         private float _originalBubbleAlpha = 1f;
+        private int _originalBaseSortingOrderBonus;
 
         private void Awake()
         {
             _rectTransform = GetComponent<RectTransform>();
             _rb = GetComponent<Rigidbody2D>();
+            _originalBaseSortingOrderBonus = _baseSortingOrderBonus;
             if (_rb == null) _rb = gameObject.AddComponent<Rigidbody2D>();
             _rb.bodyType = RigidbodyType2D.Kinematic;
 
@@ -249,6 +258,8 @@ namespace Counting1To100.DragAndDropMode
 
             // Visual bump so it appears "held"
             SetSortingOrder(_baseSortingOrderBonus + _dragSortingOrderBonus);
+            
+            OnDragStarted?.Invoke(this);
         }
 
         public void OnDrag(PointerEventData eventData)
@@ -302,6 +313,8 @@ namespace Counting1To100.DragAndDropMode
                 
                 _moveCoroutine = StartCoroutine(CrossScreenFlightRoutine());
             }
+
+            OnDragEnded?.Invoke(this);
         }
 
         public void RejectFlight()
@@ -358,7 +371,7 @@ namespace Counting1To100.DragAndDropMode
             {
                 StartCoroutine(BubbleBurstRoutine());
             }
-            
+
             // Smoothly move to center and scale down after being parented
             _moveCoroutine = StartCoroutine(SmoothCenterRoutine());
         }
@@ -420,6 +433,14 @@ namespace Counting1To100.DragAndDropMode
                 ? GameManager.Instance.CurrentLevelData.BugDropScale : 0.35f;
             transform.localPosition = Vector3.zero;
             transform.localScale = Vector3.one * finalDropScale;
+
+            OnSuccessfulDrop?.Invoke(this);
+
+            if (_hideBugOnLand)
+            {
+                gameObject.SetActive(false);
+                yield break;
+            }
 
             // Begin revolving/wandering around the newly parented flower head
             if (_enableWandering)
@@ -502,7 +523,11 @@ namespace Counting1To100.DragAndDropMode
         public void SetNumber(int number)
         {
             Number = number;
-            if (_numberText != null) _numberText.text = number.ToString();
+            if (_numberText != null) 
+            {
+                _numberText.text = number.ToString();
+                _numberText.gameObject.SetActive(true);
+            }
         }
 
         /// <summary>
@@ -539,6 +564,26 @@ namespace Counting1To100.DragAndDropMode
             {
                 _sortingGroup.sortingOrder = bonus; 
             }
+        }
+
+        public void HighlightForTutorial(int highlightSortingOrder)
+        {
+            if (_sortingGroup == null)
+            {
+                _sortingGroup = gameObject.GetComponent<UnityEngine.Rendering.SortingGroup>();
+                if (_sortingGroup == null)
+                {
+                    _sortingGroup = gameObject.AddComponent<UnityEngine.Rendering.SortingGroup>();
+                }
+            }
+            _baseSortingOrderBonus = highlightSortingOrder;
+            SetSortingOrder(_baseSortingOrderBonus);
+        }
+
+        public void ClearHighlight()
+        {
+            _baseSortingOrderBonus = _originalBaseSortingOrderBonus;
+            SetSortingOrder(_baseSortingOrderBonus);
         }
 
         // --- Visual Animation Helpers ---

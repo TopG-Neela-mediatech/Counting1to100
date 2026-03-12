@@ -391,7 +391,8 @@ MonoBehaviour:
   _baseSortingOrderBonus: 15
   _dragSortingOrderBonus: 50
   _bubbleSprite: {fileID: 0}
-  _hideNumberOnLand: 0
+  _hideNumberOnLand: 1
+  _hideBugOnLand: 0
 --- !u!61 &5709123259710660459
 BoxCollider2D:
   m_ObjectHideFlags: 0

@@ -18,6 +18,7 @@ MonoBehaviour:
   BugPrefabs:
   - {fileID: 2748827649162167442, guid: 302014259de17d54688e0792e8a44d68, type: 3}
   BackgroundSprite: {fileID: -688924078742191068, guid: c51877a1b19c4394cb61c42fa196b0a8, type: 3}
+  SecondaryBackgroundSprite: {fileID: 0}
   ContainerSprites: []
   BugColorVariants:
   - {fileID: 7791214535279931073, guid: 42fe0a907be877d4e9d64a747bc28d54, type: 3}
@@ -25,6 +26,7 @@ MonoBehaviour:
   - {fileID: 8302129328904623997, guid: 313b23d3702ed474185a75a04f502e51, type: 3}
   - {fileID: -9189023498879117399, guid: ce7c19f13ff75c6498e66f6a11745e21, type: 3}
   BugDropScale: 0.5
+  ContainerYOffset: 0
   DecorationPrefabs: []
   DecorationSpawnInterval: 15
   DecorationMaxActive: 1

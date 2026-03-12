@@ -39,6 +39,7 @@ namespace Counting1To100
             if (_numberText != null)
             {
                 _numberText.text = number.ToString();
+                _numberText.gameObject.SetActive(true);
             }
         }
 
@@ -96,6 +97,8 @@ namespace Counting1To100
             {
                 bee.Despawn();
             }
+
+            if (_numberText != null) _numberText.gameObject.SetActive(true);
         }
 
         // Deprecated: Collider not strictly needed with Tween/Callback logic, 

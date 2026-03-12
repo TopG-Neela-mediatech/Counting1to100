@@ -376,9 +376,8 @@ MonoBehaviour:
   _flowerHeadTransform: {fileID: 8111843639977312130}
   _flowerSR: {fileID: 7995131591095303666}
   _pulseFactor: 1.5
-  _containerBurstEffect: {fileID: 5378710637230568351}
-  _swappedSpriteOnDrop: {fileID: 6261838875085568562, guid: 1f078132432fc2f45bfac1aef87512aa, type: 3}
-  _hideBugOnDrop: 1
+  _afterDropEffect: {fileID: 5215932854237829501}
+  _afterDropSpriteChange: {fileID: 6261838875085568562, guid: 1f078132432fc2f45bfac1aef87512aa, type: 3}
 --- !u!1 &8369315851905817176
 GameObject:
   m_ObjectHideFlags: 0
@@ -707,13 +706,13 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d24d32ae7abae424080a26044bf04ea0, type: 3}
+--- !u!1 &5215932854237829501 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1664354186237286, guid: d24d32ae7abae424080a26044bf04ea0, type: 3}
+  m_PrefabInstance: {fileID: 5217243091591728155}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &5221838770372529205 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4763371786551342, guid: d24d32ae7abae424080a26044bf04ea0, type: 3}
-  m_PrefabInstance: {fileID: 5217243091591728155}
-  m_PrefabAsset: {fileID: 0}
---- !u!198 &5378710637230568351 stripped
-ParticleSystem:
-  m_CorrespondingSourceObject: {fileID: 198820429938409348, guid: d24d32ae7abae424080a26044bf04ea0, type: 3}
   m_PrefabInstance: {fileID: 5217243091591728155}
   m_PrefabAsset: {fileID: 0}
