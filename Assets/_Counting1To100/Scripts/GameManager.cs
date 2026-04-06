@@ -43,6 +43,12 @@ namespace Counting1To100
         {
             Debug.Log("[GameManager] Scene Ready. Invoking OnSceneLoaded.");
             OnSceneLoaded?.Invoke();
+
+            // Initialize Playschool Win/Lose Panel
+            if (PlayschoolCommon.Instance != null)
+            {
+                PlayschoolCommon.Instance.SpawnplayschoolWinLosePanel();
+            }
         }
     
         public void StartGame()
@@ -79,17 +85,26 @@ namespace Counting1To100
             Debug.Log("[GameManager] Level Complete");
             OnLevelComplete?.Invoke();
             
-            // Prepare Next Level
-            StartCoroutine(NextLevelRoutine());
+            // Show Manual Win/Lose Panel after a short delay
+            StartCoroutine(EnableWinPanelAfterDelay());
         }
 
-        private IEnumerator NextLevelRoutine()
+        private IEnumerator EnableWinPanelAfterDelay()
         {
-            yield return new WaitForSeconds(2f);
-            StartNextLevel();
+            yield return new WaitForSeconds(0.25f);
+            
+            if (WinLosePanelScript.Instance != null)
+            {
+                WinLosePanelScript.Instance.ShowNextLevelPopUp(LoadNextLevel);
+            }
+            else
+            {
+                Debug.LogWarning("[GameManager] WinLosePanelScript Instance not found! Defaulting to auto-load.");
+                LoadNextLevel();
+            }
         }
-    
-        private void StartNextLevel()
+
+        public void LoadNextLevel()
         {
             _currentLevelIndex++;
             
