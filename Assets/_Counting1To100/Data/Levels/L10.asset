@@ -18,7 +18,7 @@ MonoBehaviour:
   BugPrefabs:
   - {fileID: 9221832430643167385, guid: 718a08c36e0115142a9fa14925c8b483, type: 3}
   BackgroundSprite: {fileID: 849996129580721686, guid: 4a79481a52c06e4418652ee36f8a07fc, type: 3}
-  SecondaryBackgroundSprite: {fileID: 0}
+  SecondaryBackgroundSprite: {fileID: 3566230558595073260, guid: ff2e16ac1a24cb1478f4fdd5c4baaff9, type: 3}
   ContainerSprites: []
   BugColorVariants:
   - {fileID: -311813929138852086, guid: ec965ca2cb0805f479955c42a8329a63, type: 3}

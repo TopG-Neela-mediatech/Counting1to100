@@ -1,19 +1,22 @@
-using UnityEngine;
+﻿using UnityEngine;
 
-public class GenericSingleton<T> : MonoBehaviour where T : Component
+namespace TMKOC.Counting100
 {
-    public static T Instance { get; private set; }
-
-    protected virtual void Awake()
+    public class GenericSingleton<T> : MonoBehaviour where T : Component
     {
-        if (Instance == null)
+        public static T Instance { get; private set; }
+
+        protected virtual void Awake()
         {
-            Instance = this as T;
-            // DontDestroyOnLoad(gameObject);
-        }
-        else if (Instance != this)
-        {
-            Destroy(gameObject);
+            if (Instance == null)
+            {
+                Instance = this as T;
+                // DontDestroyOnLoad(gameObject);
+            }
+            else if (Instance != this)
+            {
+                Destroy(gameObject);
+            }
         }
     }
 }

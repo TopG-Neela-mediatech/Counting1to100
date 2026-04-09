@@ -1,6 +1,6 @@
-using UnityEngine;
+﻿using UnityEngine;
 
-namespace Counting1To100
+namespace TMKOC.Counting100
 {
     public interface IDropTarget
     {

@@ -1,10 +1,10 @@
-using System;
+﻿using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-namespace Counting1To100
+namespace TMKOC.Counting100
 {
     public class UIManager : MonoBehaviour
     {
@@ -12,6 +12,7 @@ namespace Counting1To100
         [SerializeField] private Button _playButton;
         [SerializeField] private GameObject _startPanel;
         [SerializeField] private GameObject _gamePanel;
+        [SerializeField] private Button _backButton;
 
         [Header("Tween Settings")]
         [SerializeField] private float _exitSlideDuration = 0.5f;
@@ -21,6 +22,10 @@ namespace Counting1To100
             if (_playButton != null)
             {
                 _playButton.onClick.AddListener(OnPlayClicked);
+            }
+            if (_backButton != null)
+            {
+                _backButton.onClick.AddListener(OnBackBtnClicked);
             }
         }
 
@@ -53,6 +58,15 @@ namespace Counting1To100
             }
         }
 
+        public void OnBackBtnClicked()
+        {
+            if(GameManager.Instance != null)
+            {
+                GameManager.Instance.OnBackButtonPressed();
+                return;
+            }
+        }
+
         private void HandleGameStarted()
         {
             if (_startPanel != null && _startPanel.transform.childCount > 0)
@@ -69,17 +83,17 @@ namespace Counting1To100
         private IEnumerator SlideUpRoutine(RectTransform target)
         {
             Vector2 startPos = target.anchoredPosition;
-            Vector2 endPos = new Vector2(startPos.x, startPos.y + target.rect.height);
+            Vector2 endPos = new Vector2(startPos.x, startPos.y + target.rect.height + 250f);
             float elapsed = 0f;
 
             while (elapsed < _exitSlideDuration)
             {
                 elapsed += Time.unscaledDeltaTime;
                 float t = Mathf.Clamp01(elapsed / _exitSlideDuration);
-                // Ease out (decelerate) — starts fast, slows down at end
+                // Ease out (decelerate) â€” starts fast, slows down at end
                 // t = 1f - Mathf.Pow(1f - t, 3f);
-                
-                // Ease in (accelerate) — starts slow, speeds up at end
+
+                // Ease in (accelerate) â€” starts slow, speeds up at end
                 t = Mathf.Pow(t, 3f);
                 target.anchoredPosition = Vector2.Lerp(startPos, endPos, t);
                 yield return null;

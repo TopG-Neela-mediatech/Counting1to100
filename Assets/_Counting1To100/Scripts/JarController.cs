@@ -2,7 +2,7 @@ using UnityEngine;
 using TMPro;
 using System.Collections.Generic;
 
-namespace Counting1To100
+namespace TMKOC.Counting100
 {
     public class JarController : MonoBehaviour, IDropTarget
     {
@@ -47,6 +47,7 @@ namespace Counting1To100
         {
             if (bee == null) return;
             
+            // Check Matching Logic (Flexible)
             // Check Matching Logic (Flexible)
             if (bee.Number == _targetNumber)
             {

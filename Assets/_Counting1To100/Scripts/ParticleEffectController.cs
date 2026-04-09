@@ -1,7 +1,7 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections.Generic;
 
-namespace Counting1To100
+namespace TMKOC.Counting100
 {
     public class ParticleEffectController : MonoBehaviour
     {

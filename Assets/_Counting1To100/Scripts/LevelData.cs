@@ -1,9 +1,9 @@
-using UnityEngine;
-using Counting1To100.DragAndDropMode;
+﻿using UnityEngine;
+using TMKOC.Counting100.DragAndDropMode;
 
-namespace Counting1To100
+namespace TMKOC.Counting100
 {
-    [CreateAssetMenu(fileName = "NewLevelData", menuName = "Counting1To100/LevelData", order = 1)]
+    [CreateAssetMenu(fileName = "NewLevelData", menuName = "TMKOC.Counting100/LevelData", order = 1)]
     public class LevelData : ScriptableObject
     {
         [Header("Number Range")]

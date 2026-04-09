@@ -1,0 +1,754 @@
+fileFormatVersion: 2
+guid: cdda5edd93233f74cbfc0be0586434b6
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 8592130638511000937
+    second: freepik_assistant (1)_0
+  - first:
+      213: 5625160618573371964
+    second: freepik_assistant (1)_1
+  - first:
+      213: -11701198603652925
+    second: freepik_assistant (1)_2
+  - first:
+      213: -2474613204160981382
+    second: freepik_assistant (1)_3
+  - first:
+      213: -6702272228105061048
+    second: freepik_assistant (1)_4
+  - first:
+      213: 6385324502533846508
+    second: freepik_assistant (1)_5
+  - first:
+      213: 1941447029668557879
+    second: freepik_assistant (1)_6
+  - first:
+      213: 5695603086526652973
+    second: freepik_assistant (1)_7
+  - first:
+      213: 7885878008835563060
+    second: freepik_assistant (1)_8
+  - first:
+      213: 1311214364597911858
+    second: freepik_assistant (1)_9
+  - first:
+      213: 1406699165839770243
+    second: freepik_assistant (1)_10
+  - first:
+      213: 7787530870996127180
+    second: freepik_assistant (1)_11
+  - first:
+      213: 897783661327032059
+    second: freepik_assistant (1)_12
+  - first:
+      213: 8950764740939525791
+    second: freepik_assistant (1)_13
+  - first:
+      213: -2681724213842112223
+    second: freepik_assistant (1)_14
+  - first:
+      213: 1396527628888520064
+    second: freepik_assistant (1)_15
+  - first:
+      213: -7736952858303189586
+    second: freepik_assistant (1)_16
+  - first:
+      213: -3952854625103001622
+    second: freepik_assistant (1)_17
+  - first:
+      213: -5130786792029055753
+    second: freepik_assistant (1)_18
+  - first:
+      213: -3686695329346506769
+    second: freepik_assistant (1)_19
+  - first:
+      213: 1455856604127069316
+    second: freepik_assistant (1)_20
+  - first:
+      213: 174422432473031324
+    second: freepik_assistant (1)_21
+  - first:
+      213: -2415921699763814504
+    second: freepik_assistant (1)_22
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 1
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: freepik_assistant (1)_0
+      rect:
+        serializedVersion: 2
+        x: 170
+        y: 571
+        width: 101
+        height: 108
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 96dc23cea416d3770800000000000000
+      internalID: 8592130638511000937
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: freepik_assistant (1)_1
+      rect:
+        serializedVersion: 2
+        x: 288
+        y: 562
+        width: 68
+        height: 70
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c3a159a77c5901e40800000000000000
+      internalID: 5625160618573371964
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: freepik_assistant (1)_2
+      rect:
+        serializedVersion: 2
+        x: 423
+        y: 577
+        width: 43
+        height: 46
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3c078c562dd66dff0800000000000000
+      internalID: -11701198603652925
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: freepik_assistant (1)_3
+      rect:
+        serializedVersion: 2
+        x: 497
+        y: 581
+        width: 93
+        height: 98
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a765e71e66868add0800000000000000
+      internalID: -2474613204160981382
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: freepik_assistant (1)_4
+      rect:
+        serializedVersion: 2
+        x: 609
+        y: 582
+        width: 18
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 84df4df2beebcf2a0800000000000000
+      internalID: -6702272228105061048
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: freepik_assistant (1)_5
+      rect:
+        serializedVersion: 2
+        x: 21
+        y: 391
+        width: 19
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ce5b02dddca3d9850800000000000000
+      internalID: 6385324502533846508
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: freepik_assistant (1)_6
+      rect:
+        serializedVersion: 2
+        x: 48
+        y: 362
+        width: 408
+        height: 203
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 734b1a989c761fa10800000000000000
+      internalID: 1941447029668557879
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: freepik_assistant (1)_7
+      rect:
+        serializedVersion: 2
+        x: 453
+        y: 364
+        width: 288
+        height: 200
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d222a02a4d8da0f40800000000000000
+      internalID: 5695603086526652973
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: freepik_assistant (1)_8
+      rect:
+        serializedVersion: 2
+        x: 717
+        y: 405
+        width: 53
+        height: 53
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 43e55b29444407d60800000000000000
+      internalID: 7885878008835563060
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: freepik_assistant (1)_9
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 258
+        width: 109
+        height: 104
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2318f3a748e523210800000000000000
+      internalID: 1311214364597911858
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: freepik_assistant (1)_10
+      rect:
+        serializedVersion: 2
+        x: 196
+        y: 316
+        width: 71
+        height: 43
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 382c7b53079958310800000000000000
+      internalID: 1406699165839770243
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: freepik_assistant (1)_11
+      rect:
+        serializedVersion: 2
+        x: 278
+        y: 292
+        width: 157
+        height: 90
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ccdcc1b211ed21c60800000000000000
+      internalID: 7787530870996127180
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: freepik_assistant (1)_12
+      rect:
+        serializedVersion: 2
+        x: 435
+        y: 292
+        width: 75
+        height: 90
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bfe1c8abb71957c00800000000000000
+      internalID: 897783661327032059
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: freepik_assistant (1)_13
+      rect:
+        serializedVersion: 2
+        x: 520
+        y: 316
+        width: 71
+        height: 43
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f9eaac3db11873c70800000000000000
+      internalID: 8950764740939525791
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: freepik_assistant (1)_14
+      rect:
+        serializedVersion: 2
+        x: 668
+        y: 274
+        width: 118
+        height: 114
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1219060390a98cad0800000000000000
+      internalID: -2681724213842112223
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: freepik_assistant (1)_15
+      rect:
+        serializedVersion: 2
+        x: 43
+        y: 172
+        width: 68
+        height: 68
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0853be6ba76716310800000000000000
+      internalID: 1396527628888520064
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: freepik_assistant (1)_16
+      rect:
+        serializedVersion: 2
+        x: 119
+        y: 101
+        width: 425
+        height: 198
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ead25e41e52d0a490800000000000000
+      internalID: -7736952858303189586
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: freepik_assistant (1)_17
+      rect:
+        serializedVersion: 2
+        x: 506
+        y: 101
+        width: 173
+        height: 198
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ae7c9fd59a3a429c0800000000000000
+      internalID: -3952854625103001622
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: freepik_assistant (1)_18
+      rect:
+        serializedVersion: 2
+        x: 702
+        y: 226
+        width: 21
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7f497d2c898cbc8b0800000000000000
+      internalID: -5130786792029055753
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: freepik_assistant (1)_19
+      rect:
+        serializedVersion: 2
+        x: 225
+        y: 47
+        width: 65
+        height: 65
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fefa533812a36dcc0800000000000000
+      internalID: -3686695329346506769
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: freepik_assistant (1)_20
+      rect:
+        serializedVersion: 2
+        x: 426
+        y: 0
+        width: 93
+        height: 97
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 48486e43edd343410800000000000000
+      internalID: 1455856604127069316
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: freepik_assistant (1)_21
+      rect:
+        serializedVersion: 2
+        x: 641
+        y: 97
+        width: 103
+        height: 97
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c922a68374cab6200800000000000000
+      internalID: 174422432473031324
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: freepik_assistant (1)_22
+      rect:
+        serializedVersion: 2
+        x: 358
+        y: 57
+        width: 27
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 89f7b60a30ce87ed0800000000000000
+      internalID: -2415921699763814504
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      freepik_assistant (1)_0: 8592130638511000937
+      freepik_assistant (1)_1: 5625160618573371964
+      freepik_assistant (1)_10: 1406699165839770243
+      freepik_assistant (1)_11: 7787530870996127180
+      freepik_assistant (1)_12: 897783661327032059
+      freepik_assistant (1)_13: 8950764740939525791
+      freepik_assistant (1)_14: -2681724213842112223
+      freepik_assistant (1)_15: 1396527628888520064
+      freepik_assistant (1)_16: -7736952858303189586
+      freepik_assistant (1)_17: -3952854625103001622
+      freepik_assistant (1)_18: -5130786792029055753
+      freepik_assistant (1)_19: -3686695329346506769
+      freepik_assistant (1)_2: -11701198603652925
+      freepik_assistant (1)_20: 1455856604127069316
+      freepik_assistant (1)_21: 174422432473031324
+      freepik_assistant (1)_22: -2415921699763814504
+      freepik_assistant (1)_3: -2474613204160981382
+      freepik_assistant (1)_4: -6702272228105061048
+      freepik_assistant (1)_5: 6385324502533846508
+      freepik_assistant (1)_6: 1941447029668557879
+      freepik_assistant (1)_7: 5695603086526652973
+      freepik_assistant (1)_8: 7885878008835563060
+      freepik_assistant (1)_9: 1311214364597911858
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

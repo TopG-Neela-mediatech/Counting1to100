@@ -1,9 +1,9 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using Counting1To100.DragAndDropMode;
+using TMKOC.Counting100.DragAndDropMode;
 
-namespace Counting1To100
+namespace TMKOC.Counting100
 {
     public class LevelTutorialManager : MonoBehaviour
     {
@@ -182,6 +182,9 @@ namespace Counting1To100
             // Always pause and show overlay now, as per user request for unified tutorial experience
             GameManager.Instance.StartTutorial();
             if (_darkOverlay != null) _darkOverlay.SetActive(true);
+
+            // Audio Cue: Target Number for the hint
+            AudioManager.Instance.PlayNumber(bug.Number);
 
             // Boost Sorting
             _highlightedBug.HighlightForTutorial(_highlightSortingOrder);

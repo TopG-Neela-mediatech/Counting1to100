@@ -71,11 +71,11 @@ MonoBehaviour:
   _wanderSpeed: 0.15
   _wanderChangeInterval: 2
   _jumpHeight: 5
-  _enableBobbing: 0
-  _bobMinY: -0.2
-  _bobMaxY: 0.2
-  _bobMinScaleOffset: -0.05
-  _bobMaxScaleOffset: 0.05
+  _enableBobbing: 1
+  _bobMinY: -0.3
+  _bobMaxY: 0.3
+  _bobMinScaleOffset: 0
+  _bobMaxScaleOffset: 0
   _bobSpeed: 2
   _bugSprites:
   - Renderer: {fileID: 2624618889297239140}
@@ -84,6 +84,8 @@ MonoBehaviour:
   _dragSortingOrderBonus: 50
   _bubbleSprite: {fileID: 0}
   _hideNumberOnLand: 1
+  _hideBugOnLand: 0
+  _inJarSortingOrder: 5
 --- !u!61 &7695582191577106582
 BoxCollider2D:
   m_ObjectHideFlags: 0

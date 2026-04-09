@@ -1,7 +1,7 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
-namespace Counting1To100
+namespace TMKOC.Counting100
 {
     public class BackgroundManager : MonoBehaviour
     {

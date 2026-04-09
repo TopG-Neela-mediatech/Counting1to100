@@ -1,8 +1,8 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Pool;
 using System.Collections.Generic;
 
-namespace Counting1To100.DragAndDropMode
+namespace TMKOC.Counting100.DragAndDropMode
 {
     public class DirectionalBugSpawner : MonoBehaviour
     {

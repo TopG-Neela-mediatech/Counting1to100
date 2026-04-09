@@ -1,7 +1,7 @@
 using UnityEngine;
 using TMPro;
 
-namespace Counting1To100.DragAndDropMode
+namespace TMKOC.Counting100.DragAndDropMode
 {
     public class FlowerContainerController : MonoBehaviour, IDragContainer
     {
@@ -64,6 +64,8 @@ namespace Counting1To100.DragAndDropMode
             // PREVENT DOUBLE DROP: Check if we already have a bug here
             if (bug.Number == _targetNumber && !IsCompleted)
             {
+                AudioManager.Instance.PlayCorrect();
+
                 if (GameManager.Instance != null)
                 {
                     // Pass true for valid match
@@ -102,6 +104,8 @@ namespace Counting1To100.DragAndDropMode
             }
             else
             {
+                AudioManager.Instance.PlayIncorrect();
+
                 // Wrong number OR the flower is already occupied
                 if (GameManager.Instance != null && !IsCompleted)
                 {

@@ -255,7 +255,7 @@ MonoBehaviour:
   _jarMaxY: 1.25
   _wanderSpeed: 0.15
   _wanderChangeInterval: 2
-  _jumpHeight: 5
+  _jumpHeight: 10
   _enableBobbing: 0
   _bobMinY: -0.2
   _bobMaxY: 0.2
@@ -269,6 +269,7 @@ MonoBehaviour:
   _dragSortingOrderBonus: 50
   _bubbleSprite: {fileID: 0}
   _hideNumberOnLand: 1
+  _hideBugOnLand: 0
 --- !u!61 &6515611011847014284
 BoxCollider2D:
   m_ObjectHideFlags: 0

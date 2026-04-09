@@ -2,8 +2,9 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using TMPro;
 using UnityEngine.Rendering;
+using DG.Tweening;
 
-namespace Counting1To100.DragAndDropMode
+namespace TMKOC.Counting100.DragAndDropMode
 {
     [System.Serializable]
     public struct BugSpriteData
@@ -64,9 +65,10 @@ namespace Counting1To100.DragAndDropMode
         [SerializeField] private int _dragSortingOrderBonus = 50;
 
         [Header("Drop Effect")]
-        [SerializeField] private SpriteRenderer _bubbleSprite; // Optional — assign only on Dino Egg prefab
+        [SerializeField] private SpriteRenderer _bubbleSprite; // Optional â€” assign only on Dino Egg prefab
         [SerializeField] private bool _hideNumberOnLand = true; // Set false on Pearl prefab to keep number visible
         [SerializeField] private bool _hideBugOnLand = false;
+        [SerializeField] private int _inJarSortingOrder = 5;
         public bool HideNumberOnLand => _hideNumberOnLand;
 
         public int Number { get; private set; }
@@ -258,7 +260,9 @@ namespace Counting1To100.DragAndDropMode
 
             // Visual bump so it appears "held"
             SetSortingOrder(_baseSortingOrderBonus + _dragSortingOrderBonus);
-            
+
+            AudioManager.Instance.PlayNumber(Number);
+
             OnDragStarted?.Invoke(this);
         }
 
@@ -372,8 +376,64 @@ namespace Counting1To100.DragAndDropMode
                 StartCoroutine(BubbleBurstRoutine());
             }
 
-            // Smoothly move to center and scale down after being parented
-            _moveCoroutine = StartCoroutine(SmoothCenterRoutine());
+            // Branch for Level 10 (Index 9) special behavior
+            if (GameManager.Instance != null && GameManager.Instance.CurrentLevelIndex == 9)
+            {
+                ExecuteLevel10Jump();
+            }
+            else
+            {
+                // Smoothly move to center and scale down after being parented
+                _moveCoroutine = StartCoroutine(SmoothCenterRoutine());
+            }
+        }
+
+        private void ExecuteLevel10Jump()
+        {
+            float duration = 0.6f;
+            float startScale = 0.5f;
+            float endScale = 0.4f;
+
+            // Immediately set starting scale for the jump
+            transform.localScale = Vector3.one * startScale;
+
+            // Use DOTween Sequence for precise timing
+            Sequence jumpSequence = DOTween.Sequence();
+
+            // 1. Perform Java-style Local Jump arc
+            jumpSequence.Join(transform.DOLocalJump(Vector3.zero, _jumpHeight, 1, duration));
+
+            // 2. Perform Scale shrink (From 0.5 to 0.4)
+            jumpSequence.Join(transform.DOScale(Vector3.one * endScale, duration));
+
+            // 3. IMPORTANT: Change sorting order exactly at the PEAK (highest point)
+            jumpSequence.InsertCallback(duration / 2f, () => SetSortingOrder(_inJarSortingOrder));
+
+            // 4. Finalize
+            jumpSequence.OnComplete(() => {
+                transform.localPosition = Vector3.zero;
+                transform.localScale = Vector3.one * endScale;
+
+                OnSuccessfulDrop?.Invoke(this);
+
+                if (_hideBugOnLand)
+                {
+                    gameObject.SetActive(false);
+                    return;
+                }
+
+                // Begin revolving/wandering around the newly parented flower head
+                if (_enableWandering)
+                {
+                    if (_wanderCoroutine != null) StopCoroutine(_wanderCoroutine);
+                    _wanderCoroutine = StartCoroutine(FlowerWanderRoutine());
+                }
+                else if (_enableBobbing)
+                {
+                    if (_wanderCoroutine != null) StopCoroutine(_wanderCoroutine);
+                    _wanderCoroutine = StartCoroutine(FlowerBobRoutine(endScale));
+                }
+            });
         }
 
         private System.Collections.IEnumerator BubbleBurstRoutine()

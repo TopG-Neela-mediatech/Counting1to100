@@ -1,9 +1,9 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Pool;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace Counting1To100
+namespace TMKOC.Counting100
 {
     /// <summary>
     /// Manages per-level ambient decoration prefabs (fish, birds, etc.).
@@ -187,7 +187,7 @@ namespace Counting1To100
                 yield return null;
             }
 
-            // Reached end — release back to pool
+            // Reached end â€” release back to pool
             if (obj != null)
             {
                 _activeDecorations.Remove(obj);
@@ -217,7 +217,7 @@ namespace Counting1To100
             }
             else
             {
-                // Random edge-to-edge (for butterflies etc. — future use)
+                // Random edge-to-edge (for butterflies etc. â€” future use)
                 int edge = Random.Range(0, 4);
                 startPos = Vector3.zero;
                 endPos = Vector3.zero;

@@ -1,8 +1,8 @@
-using UnityEngine;
+﻿using UnityEngine;
 using TMPro;
 using UnityEngine.EventSystems;
 
-namespace Counting1To100
+namespace TMKOC.Counting100
 {
     /// <summary>
     /// Controls the visual and movement behavior of the Bee.

@@ -1,10 +1,10 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Events;
 
-namespace Counting1To100
+namespace TMKOC.Counting100
 {
     /// <summary>
     /// Animates a sequence of sprites on a Unity UI Image component.

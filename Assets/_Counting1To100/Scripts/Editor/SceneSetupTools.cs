@@ -5,14 +5,14 @@ using UnityEditor.SceneManagement;
 using UnityEngine.UI;
 using System.IO;
 
-namespace Counting1To100.Editor
+namespace TMKOC.Counting100.Editor
 {
     public class SceneSetupTools : EditorWindow
     {
         private string _sceneName = "NewScene";
         private string _folderPath = "Assets/_Counting1To100/Scenes";
         
-        [MenuItem("Counting1to100/Scene Setup Window")]
+        [MenuItem("TMKOC.Counting100/Scene Setup Window")]
         public static void ShowWindow()
         {
             GetWindow<SceneSetupTools>("Scene Setup");
