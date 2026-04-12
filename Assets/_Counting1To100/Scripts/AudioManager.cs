@@ -36,7 +36,8 @@ namespace TMKOC.Counting100
         public void PlayLevelStart(int levelIndex)
         {
             // levelIndex is 0-based, titles like "OnLevelStart1" are 1-based
-            string key = $"OnLevelStart{levelIndex + 1}";
+            string key = $"OnLevelStart{levelIndex}";
+            Debug.Log($"Level Index Audio Key: {key}");
             if (RuntimeAudioLoader.Instance != null)
                 RuntimeAudioLoader.Instance.PlayRuntimeAudio(key);
         }
