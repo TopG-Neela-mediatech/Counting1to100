@@ -66,6 +66,12 @@ sequenceDiagram
 *   `OnNextLevel`: Advances the index to fetch the next `LevelData` Configuration.
 *   `OnGameEnded`: Fired when the final level is cleared, initiating the terminal minigame exit flow.
 
+### 🔌 Event Binding & Inspector Connections
+*   **Programmatic Binding (Preferred):** To ensure code searchability and avoid hidden scene dependencies, all critical buttons in this project are wired **programmatically** in code rather than using Inspector-configured UnityEvents.
+    *   *Examples:* `_playButton.onClick.AddListener(OnPlayClicked)` in `UIManager.cs` and button clicks in `WinLosePanelScript.cs`.
+*   **Pointer Interfaces:** User interactions on the insects (`BeeController` / `BugController`) are driven by Unity EventSystem interfaces (`IPointerClickHandler`, `IBeginDragHandler`, `IDragHandler`, `IEndDragHandler`) rather than Inspector triggers.
+*   *Audit Tip:* If you are maintaining other projects in this suite, you can scan for Inspector-wired methods by searching scene/prefab files for the `m_MethodName:` property.
+
 ---
 
 ## 🗂️ Scene & AssetBundle Configuration
